@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /*.json$
+Disallow: /*.log$
+
+Sitemap: https://VOTRE-DOMAINE.com/sitemap.xml
+
+# BudgetCAD Pro - Gestionnaire financier
