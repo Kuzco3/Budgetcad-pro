@@ -1,0 +1,27 @@
+# --- EXTENSIONS ET ÉDITEURS ---
+.vscode/
+.history/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# --- SYSTÈME ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- LANGAGES (Python, Node, etc.) ---
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+node_modules/
+
+# --- LOGS ET TEMPORAIRE ---
+*.log
+temp/
+tmp/
