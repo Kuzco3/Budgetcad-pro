@@ -14,10 +14,12 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<!-- Bibliothèques -->
+<script src="https://cdn.jsdelivr.net/npm/lz-string@1.5.0/libs/lz-string.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -43,20 +45,14 @@
   --b1: rgba(77,143,255,0.2); --b2: rgba(100,116,139,0.1); --b3: rgba(100,116,139,0.05);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{
-  font-size:16px;-webkit-tap-highlight-color:transparent;scroll-behavior:smooth;
-  touch-action:manipulation;-ms-touch-action:manipulation;
-  -webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;text-size-adjust:100%;
-}
+html{font-size:16px;-webkit-tap-highlight-color:transparent;scroll-behavior:smooth;touch-action:manipulation;-webkit-text-size-adjust:100%}
 body{
   font-family:var(--f-sans);background:var(--s0);color:var(--t1);
   min-height:100vh;min-height:100dvh;overflow-x:hidden;
   -webkit-font-smoothing:antialiased;touch-action:pan-x pan-y;
-  -webkit-text-size-adjust:100%;overscroll-behavior:none;
-  transition:background-color .3s,color .3s;
+  overscroll-behavior:none;transition:background-color .3s,color .3s;
 }
-input,textarea,select{font-size:16px !important;touch-action:manipulation}
-button{touch-action:manipulation;cursor:pointer}
+input,textarea,select,button{font-size:16px !important;touch-action:manipulation}
 ::-webkit-scrollbar{width:3px;height:3px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--b1);border-radius:2px}
@@ -91,15 +87,9 @@ button{touch-action:manipulation;cursor:pointer}
 .nav-item:hover{background:var(--s3);color:var(--t1)}
 .nav-item.active{background:var(--a-blue-g);border-color:var(--b1);color:var(--a-blue)}
 .nav-icon{width:28px;height:28px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px}
-.nav-badge{
-  margin-left:auto;background:var(--a-red);color:#fff;font-size:9px;font-weight:700;
-  padding:2px 5px;border-radius:10px;min-width:16px;text-align:center;
-}
+.nav-badge{margin-left:auto;background:var(--a-red);color:#fff;font-size:9px;font-weight:700;padding:2px 5px;border-radius:10px;min-width:16px;text-align:center}
 .sidebar-footer{padding:14px;border-top:1px solid var(--b2)}
-.salary-card{
-  background:linear-gradient(135deg,var(--s3) 0%,var(--s2) 100%);
-  border:1px solid var(--b1);border-radius:var(--r-md);padding:12px 14px;
-}
+.salary-card{background:linear-gradient(135deg,var(--s3) 0%,var(--s2) 100%);border:1px solid var(--b1);border-radius:var(--r-md);padding:12px 14px}
 .salary-label{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);margin-bottom:4px}
 .salary-value{font-family:var(--f-mono);font-size:17px;font-weight:500;color:var(--a-green)}
 .salary-sub{font-size:10px;color:var(--t3);margin-top:3px}
@@ -114,27 +104,18 @@ button{touch-action:manipulation;cursor:pointer}
 .topbar-title{font-size:15px;font-weight:700}
 .topbar-right{display:flex;align-items:center;gap:8px}
 .content{padding:28px;flex:1}
-.toggle-btn{
-  width:36px;height:36px;border-radius:var(--r-md);display:flex;align-items:center;
-  justify-content:center;cursor:pointer;background:var(--s2);border:1px solid var(--b2);
-  color:var(--t2);font-size:16px;touch-action:manipulation;
-}
+.toggle-btn{width:36px;height:36px;border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;cursor:pointer;background:var(--s2);border:1px solid var(--b2);color:var(--t2);font-size:16px;touch-action:manipulation}
 .toggle-btn:hover{background:var(--s3);color:var(--a-blue)}
 .toggle-btn.active{background:var(--a-blue-g);color:var(--a-blue);border-color:var(--a-blue)}
-.card{background:var(--s1);border:1px solid var(--b2);border-radius:var(--r-lg);padding:20px}
-.card:hover{border-color:var(--b1)}
+.card{background:var(--s1);border:1px solid var(--b2);border-radius:var(--r-lg);padding:20px;transition:border-color .2s,transform .2s}
+.card:hover{border-color:var(--b1);transform:translateY(-1px)}
 .card-title{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);margin-bottom:16px}
 .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:22px}
 .kpi{background:var(--s1);border:1px solid var(--b2);border-radius:var(--r-lg);padding:18px 20px;transition:all .2s}
 .kpi:hover{transform:translateY(-2px);border-color:var(--b1);box-shadow:0 8px 32px rgba(0,0,0,0.4)}
 .kpi-label{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);margin-bottom:8px}
 .kpi-val{font-family:var(--f-mono);font-size:clamp(1.1rem,1.6vw,1.4rem);font-weight:500}
-.kpi-sub{font-size:11px;color:var(--t3);margin-top:6px}
-.btn{
-  display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:var(--r-md);
-  font-family:var(--f-sans);font-size:13px;font-weight:600;cursor:pointer;
-  border:1px solid transparent;transition:all .15s;white-space:nowrap;touch-action:manipulation;
-}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:var(--r-md);font-family:var(--f-sans);font-size:13px;font-weight:600;cursor:pointer;border:1px solid transparent;transition:all .15s;white-space:nowrap;touch-action:manipulation}
 .btn-primary{background:var(--a-blue);color:#fff;border-color:var(--a-blue)}
 .btn-primary:hover{background:var(--a-blue-d);transform:translateY(-1px)}
 .btn-primary:active{transform:scale(.97)}
@@ -147,49 +128,25 @@ button{touch-action:manipulation;cursor:pointer}
 .btn-icon{padding:8px;border-radius:var(--r-sm)}
 .fg{margin-bottom:14px}
 .fg-label{font-size:11px;font-weight:600;color:var(--t2);margin-bottom:6px;display:block}
-.fc{
-  width:100%;padding:10px 13px;background:var(--s2);border:1px solid var(--b2);
-  border-radius:var(--r-md);color:var(--t1);font-family:var(--f-sans);font-size:16px !important;
-  transition:all .15s;outline:none;appearance:none;
-}
+.fc{width:100%;padding:10px 13px;background:var(--s2);border:1px solid var(--b2);border-radius:var(--r-md);color:var(--t1);font-family:var(--f-sans);font-size:16px !important;transition:all .15s;outline:none;appearance:none}
 .fc:focus{border-color:var(--a-blue);box-shadow:0 0 0 3px var(--a-blue-g);background:var(--s3)}
-.fc::placeholder{color:var(--t3)}
-select.fc{
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238895B3' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
-  background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;
-}
-select.fc option{background:var(--s2);color:var(--t1)}
+select.fc{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238895B3' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
 .fc-num{font-family:var(--f-mono);text-align:right;font-size:16px;font-weight:500}
-textarea.fc{resize:vertical;min-height:62px}
 .ac-wrap{position:relative}
-.ac-list{
-  position:absolute;top:calc(100% + 5px);left:0;right:0;background:var(--s2);
-  border:1px solid var(--b1);border-radius:var(--r-md);z-index:999;
-  max-height:220px;overflow-y:auto;box-shadow:0 12px 40px rgba(0,0,0,0.6);display:none;
-}
+.ac-list{position:absolute;top:calc(100% + 5px);left:0;right:0;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r-md);z-index:999;max-height:220px;overflow-y:auto;box-shadow:0 12px 40px rgba(0,0,0,0.6);display:none}
 .ac-list.open{display:block}
 .ac-item{padding:10px 13px;cursor:pointer;font-size:13px;border-bottom:1px solid var(--b3);transition:background .1s}
-.ac-item:hover,.ac-item.sel{background:var(--a-blue-g)}
-.modal-bg{
-  position:fixed;inset:0;background:rgba(2,5,15,0.8);backdrop-filter:blur(10px);
-  z-index:500;display:none;align-items:center;justify-content:center;padding:20px;
-}
+.ac-item:hover{background:var(--a-blue-g)}
+.modal-bg{position:fixed;inset:0;background:rgba(2,5,15,0.8);backdrop-filter:blur(10px);z-index:500;display:none;align-items:center;justify-content:center;padding:20px}
 .modal-bg.open{display:flex}
-.modal{
-  background:var(--s1);border:1px solid var(--b1);border-radius:var(--r-xl);
-  width:100%;max-width:560px;max-height:85vh;max-height:85dvh;overflow-y:auto;
-  box-shadow:0 24px 80px rgba(0,0,0,0.7);animation:modalIn .28s var(--ease);
-}
+.modal{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r-xl);width:100%;max-width:560px;max-height:85vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,0.7);animation:modalIn .28s var(--ease)}
 @keyframes modalIn{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:none}}
 .modal-hdr{padding:20px 22px 16px;border-bottom:1px solid var(--b2);display:flex;align-items:center;gap:12px}
 .modal-title{font-size:16px;font-weight:700}
 .modal-body{padding:20px 22px}
 .modal-ftr{padding:14px 22px 20px;border-top:1px solid var(--b2);display:flex;gap:8px;justify-content:flex-end}
 .tabs{display:flex;gap:2px;background:var(--s2);padding:3px;border-radius:var(--r-md);margin-bottom:20px}
-.tab{
-  flex:1;padding:7px 10px;border-radius:9px;font-size:12px;font-weight:600;
-  cursor:pointer;border:none;background:transparent;color:var(--t2);text-align:center;touch-action:manipulation;
-}
+.tab{flex:1;padding:7px 10px;border-radius:9px;font-size:12px;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--t2);text-align:center;touch-action:manipulation}
 .tab.active{background:var(--a-blue);color:#fff}
 .sync-panel{display:none}
 .sync-panel.active{display:block}
@@ -204,24 +161,13 @@ textarea.fc{resize:vertical;min-height:62px}
 .section-title{font-size:20px;font-weight:800;margin-bottom:4px}
 .section-sub{font-size:13px;color:var(--t3);margin-bottom:22px}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.toast-zone{
-  position:fixed;top:20px;right:20px;z-index:9999;
-  display:flex;flex-direction:column;gap:8px;pointer-events:none;
-}
-.toast{
-  background:var(--s2);border:1px solid var(--b1);border-radius:var(--r-md);
-  padding:11px 15px;font-size:13px;min-width:260px;max-width:340px;
-  box-shadow:0 8px 32px rgba(0,0,0,0.5);display:flex;align-items:flex-start;gap:10px;
-  animation:toastIn .28s var(--ease);border-left:3px solid var(--a-blue);pointer-events:auto;
-}
+.toast-zone{position:fixed;top:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{background:var(--s2);border:1px solid var(--b1);border-radius:var(--r-md);padding:11px 15px;font-size:13px;min-width:260px;max-width:340px;box-shadow:0 8px 32px rgba(0,0,0,0.5);display:flex;align-items:flex-start;gap:10px;animation:toastIn .28s var(--ease);border-left:3px solid var(--a-blue);pointer-events:auto}
 .toast.success{border-left-color:var(--a-green)}
 .toast.error{border-left-color:var(--a-red)}
 .toast.warning{border-left-color:var(--a-amber)}
 @keyframes toastIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:none}}
-.alert{
-  border-radius:var(--r-md);padding:11px 15px;display:flex;align-items:flex-start;
-  gap:10px;font-size:13px;margin-bottom:10px;border:1px solid;
-}
+.alert{border-radius:var(--r-md);padding:11px 15px;display:flex;align-items:flex-start;gap:10px;font-size:13px;margin-bottom:10px;border:1px solid}
 .alert.danger{background:var(--a-red-g);border-color:rgba(255,92,114,0.25);color:var(--a-red)}
 .alert.warning{background:var(--a-amber-g);border-color:rgba(255,192,64,0.25);color:var(--a-amber)}
 .alert.success{background:var(--a-green-g);border-color:rgba(0,230,153,0.25);color:var(--a-green)}
@@ -237,38 +183,22 @@ textarea.fc{resize:vertical;min-height:62px}
 .cal-dot{width:4px;height:4px;background:var(--a-blue);border-radius:2px}
 .cal-amt{font-size:8px;color:var(--a-blue);font-family:var(--f-mono)}
 .type-btns{display:flex;gap:5px;flex-wrap:wrap}
-.type-btn{
-  padding:6px 13px;border-radius:var(--r-md);font-size:12px;font-weight:600;
-  cursor:pointer;border:1px solid var(--b2);background:transparent;color:var(--t2);
-  transition:all .15s;touch-action:manipulation;
-}
+.type-btn{padding:6px 13px;border-radius:var(--r-md);font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--b2);background:transparent;color:var(--t2);transition:all .15s;touch-action:manipulation}
 .type-btn.active{border-color:var(--a-blue);background:var(--a-blue-g);color:var(--a-blue)}
 .hamburger{display:none;flex-direction:column;gap:4.5px;padding:7px;border-radius:var(--r-sm);border:1px solid var(--b2);cursor:pointer}
 .hamburger span{width:18px;height:1.5px;background:var(--t2);border-radius:1px;display:block}
 .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:199}
-@media(max-width:900px){
-  .sidebar{transform:translateX(-100%);width:280px}
-  .sidebar.open{transform:none;box-shadow:20px 0 60px rgba(0,0,0,0.5)}
-  .sidebar-overlay.open{display:block}
-  .main{margin-left:0}
-  .hamburger{display:flex}
-  .g2{grid-template-columns:1fr}
-  .content{padding:16px}
-  .kpi-grid{grid-template-columns:1fr 1fr}
-  .topbar{padding:0 16px}
-}
+@media(max-width:900px){.sidebar{transform:translateX(-100%);width:280px}.sidebar.open{transform:none;box-shadow:20px 0 60px rgba(0,0,0,0.5)}.sidebar-overlay.open{display:block}.main{margin-left:0}.hamburger{display:flex}.g2{grid-template-columns:1fr}.content{padding:16px}.kpi-grid{grid-template-columns:1fr 1fr}.topbar{padding:0 16px}}
 @media(max-width:480px){.kpi-grid{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
 
-<!-- Anti-zoom gestures -->
 <script>
 document.addEventListener('gesturestart',function(e){e.preventDefault()});
 document.addEventListener('gesturechange',function(e){e.preventDefault()});
 document.addEventListener('gestureend',function(e){e.preventDefault()});
-let _lt=0;
-document.addEventListener('touchend',function(e){var n=Date.now();if(n-_lt<=300)e.preventDefault();_lt=n});
+let _lt=0;document.addEventListener('touchend',function(e){var n=Date.now();if(n-_lt<=300)e.preventDefault();_lt=n});
 </script>
 
 <div class="toast-zone" id="toastZone"></div>
@@ -276,9 +206,7 @@ document.addEventListener('touchend',function(e){var n=Date.now();if(n-_lt<=300)
 
 <div class="app">
   <aside class="sidebar" id="sidebar">
-    <div class="brand">
-      <div class="brand-text"><div class="brand-name">BudgetCAD</div><div class="brand-tag">Finance Pro</div></div>
-    </div>
+    <div class="brand"><div class="brand-text"><div class="brand-name">BudgetCAD</div><div class="brand-tag">Finance Pro</div></div></div>
     <nav class="nav">
       <div class="nav-group"><div class="nav-group-label">Principal</div>
         <div class="nav-item active" data-p="dashboard" onclick="nav('dashboard')"><div class="nav-icon">📊</div>Dashboard</div>
@@ -296,171 +224,58 @@ document.addEventListener('touchend',function(e){var n=Date.now();if(n-_lt<=300)
         <div class="nav-item" data-p="guichets" onclick="nav('guichets')"><div class="nav-icon">🏧</div>Guichets ATM</div>
         <div class="nav-item" data-p="sync" onclick="nav('sync')"><div class="nav-icon">🔄</div>Synchroniser</div>
       </div>
-      <div class="nav-group"><div class="nav-group-label">Réglages</div>
-        <div class="nav-item" data-p="params" onclick="nav('params')"><div class="nav-icon">⚙️</div>Paramètres</div>
-      </div>
+      <div class="nav-group"><div class="nav-group-label">Réglages</div><div class="nav-item" data-p="params" onclick="nav('params')"><div class="nav-icon">⚙️</div>Paramètres</div></div>
     </nav>
-    <div class="sidebar-footer">
-      <div class="salary-card">
-        <div class="salary-label">Revenu net / semaine</div>
-        <div class="salary-value discret-blur" id="sbSal">1 020,00 $</div>
-        <div class="salary-sub discret-blur" id="sbSalSub">Modifiable → Revenus</div>
-      </div>
-    </div>
+    <div class="sidebar-footer"><div class="salary-card"><div class="salary-label">Revenu net / semaine</div><div class="salary-value discret-blur" id="sbSal">1 020,00 $</div><div class="salary-sub discret-blur" id="sbSalSub">Modifiable → Revenus</div></div></div>
   </aside>
   <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
   <main class="main">
     <div class="topbar">
-      <div class="topbar-left">
-        <div class="hamburger" id="hamburger" onclick="toggleSidebar()"><span></span><span></span><span></span></div>
-        <div class="topbar-title" id="topbarTitle">Dashboard</div>
-      </div>
-      <div class="topbar-right">
-        <div class="toggle-btn" id="discretBtn" onclick="toggleDiscret()" title="Mode discret">👁️</div>
-        <div class="toggle-btn" id="themeToggle" onclick="toggleTheme()">🌙</div>
-        <button class="btn btn-primary btn-sm" onclick="openModal('mDep')">+ Dépense</button>
-      </div>
+      <div class="topbar-left"><div class="hamburger" id="hamburger" onclick="toggleSidebar()"><span></span><span></span><span></span></div><div class="topbar-title" id="topbarTitle">Dashboard</div></div>
+      <div class="topbar-right"><div class="toggle-btn" id="discretBtn" onclick="toggleDiscret()" title="Mode discret">👁️</div><div class="toggle-btn" id="themeToggle" onclick="toggleTheme()">🌙</div><button class="btn btn-primary btn-sm" onclick="openModal('mDep')">+ Dépense</button></div>
     </div>
     <div class="content">
 
       <!-- DASHBOARD -->
-      <div id="page-dashboard" class="page active">
-        <div id="alertZone"></div>
-        <div class="kpi-grid" id="kpiGrid"></div>
-        <div class="g2" style="margin-bottom:18px">
-          <div class="card"><div class="card-title">📈 Dépenses vs Revenus</div><div style="height:210px"><canvas id="chartBar"></canvas></div></div>
-          <div class="card"><div class="card-title">🥧 Catégories</div><div style="height:210px"><canvas id="chartDough"></canvas></div></div>
-        </div>
-        <div class="card"><div class="card-title">⏱️ Dernières dépenses</div><div id="lastDeps"></div></div>
-      </div>
+      <div id="page-dashboard" class="page active"><div id="alertZone"></div><div class="kpi-grid" id="kpiGrid"></div><div class="g2" style="margin-bottom:18px"><div class="card"><div class="card-title">📈 Dépenses vs Revenus</div><div style="height:210px"><canvas id="chartBar"></canvas></div></div><div class="card"><div class="card-title">🥧 Catégories</div><div style="height:210px"><canvas id="chartDough"></canvas></div></div></div><div class="card"><div class="card-title">⏱️ Dernières dépenses</div><div id="lastDeps"></div></div></div>
 
       <!-- DÉPENSES -->
-      <div id="page-depenses" class="page">
-        <div style="display:flex;justify-content:space-between;margin-bottom:20px"><div class="section-title">Journal</div><button class="btn btn-primary btn-sm" onclick="openModal('mDep')">+ Ajouter</button></div>
-        <div class="card" style="margin-bottom:14px;padding:14px">
-          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px">
-            <select class="fc" id="fMois" onchange="renderDeps()"></select>
-            <select class="fc" id="fCat" onchange="renderDeps()"><option value="">Catégories</option></select>
-            <input type="text" class="fc" id="fSearch" placeholder="Rechercher…" oninput="renderDeps()">
-          </div>
-        </div>
-        <div id="depList"></div>
-      </div>
+      <div id="page-depenses" class="page"><div style="display:flex;justify-content:space-between;margin-bottom:20px"><div class="section-title">Journal</div><button class="btn btn-primary btn-sm" onclick="openModal('mDep')">+ Ajouter</button></div><div class="card" style="margin-bottom:14px;padding:14px"><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px"><select class="fc" id="fMois" onchange="renderDeps()"></select><select class="fc" id="fCat" onchange="renderDeps()"><option value="">Catégories</option></select><input type="text" class="fc" id="fSearch" placeholder="Rechercher…" oninput="renderDeps()"></div></div><div id="depList"></div></div>
 
       <!-- CALENDRIER -->
-      <div id="page-calendrier" class="page">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
-          <button class="btn btn-ghost btn-icon" onclick="calChange(-1)">◀</button>
-          <h2 style="flex:1;text-align:center;font-size:16px" id="calTitle"></h2>
-          <button class="btn btn-ghost btn-icon" onclick="calChange(1)">▶</button>
-          <button class="btn btn-ghost btn-icon" onclick="calChange(0)">●</button>
-        </div>
-        <div class="card"><div class="cal-grid" id="calGrid"></div></div>
-      </div>
+      <div id="page-calendrier" class="page"><div style="display:flex;align-items:center;gap:10px;margin-bottom:20px"><button class="btn btn-ghost btn-icon" onclick="calChange(-1)">◀</button><h2 style="flex:1;text-align:center;font-size:16px" id="calTitle"></h2><button class="btn btn-ghost btn-icon" onclick="calChange(1)">▶</button><button class="btn btn-ghost btn-icon" onclick="calChange(0)">●</button></div><div class="card"><div class="cal-grid" id="calGrid"></div></div></div>
 
       <!-- SCANNER -->
-      <div id="page-scanner" class="page">
-        <div class="section-title">Scanner facture</div>
-        <div class="g2">
-          <div class="card" style="text-align:center;cursor:pointer;padding:48px 24px" onclick="document.getElementById('scanInput').click()">
-            <div style="font-size:40px;margin-bottom:12px">📷</div><div style="font-weight:700">Photographier</div>
-          </div>
-          <input type="file" id="scanInput" accept="image/*" capture="environment" style="display:none" onchange="handleScan(event)">
-          <div><div class="card"><div class="card-title">Résultats</div><div id="ocrOut"><div class="empty"><p>En attente</p></div></div></div>
-          <div id="ocrImport" style="display:none;margin-top:10px"><button class="btn btn-success" style="width:100%" onclick="importOCR()">Importer</button></div></div>
-        </div>
-      </div>
+      <div id="page-scanner" class="page"><div class="section-title">Scanner facture</div><div class="g2"><div class="card" style="text-align:center;cursor:pointer;padding:48px 24px" onclick="document.getElementById('scanInput').click()"><div style="font-size:40px;margin-bottom:12px">📷</div><div style="font-weight:700">Photographier</div></div><input type="file" id="scanInput" accept="image/*" capture="environment" style="display:none" onchange="handleScan(event)"><div><div class="card"><div class="card-title">Résultats</div><div id="ocrOut"><div class="empty"><p>En attente</p></div></div></div><div id="ocrImport" style="display:none;margin-top:10px"><button class="btn btn-success" style="width:100%" onclick="importOCR()">Importer</button></div></div></div></div>
 
       <!-- BUDGET -->
-      <div id="page-budget" class="page">
-        <div style="display:flex;justify-content:space-between;margin-bottom:20px"><div class="section-title">Budget</div><button class="btn btn-ghost btn-sm" onclick="openModal('mBudget')">Modifier</button></div>
-        <div class="card"><div id="budgetList"></div></div>
-      </div>
+      <div id="page-budget" class="page"><div style="display:flex;justify-content:space-between;margin-bottom:20px"><div class="section-title">Budget</div><button class="btn btn-ghost btn-sm" onclick="openModal('mBudget')">Modifier</button></div><div class="card"><div id="budgetList"></div></div></div>
 
       <!-- GRAPHIQUES -->
-      <div id="page-graphiques" class="page">
-        <div class="section-title">Graphiques</div>
-        <div class="g2"><div class="card"><div style="height:240px"><canvas id="chartLine"></canvas></div></div><div class="card"><div style="height:240px"><canvas id="chartPie2"></canvas></div></div></div>
-      </div>
+      <div id="page-graphiques" class="page"><div class="section-title">Graphiques</div><div class="g2"><div class="card"><div style="height:240px"><canvas id="chartLine"></canvas></div></div><div class="card"><div style="height:240px"><canvas id="chartPie2"></canvas></div></div></div></div>
 
       <!-- REVENUS -->
-      <div id="page-revenus" class="page">
-        <div class="section-title">💵 Revenus</div>
-        <div class="g2">
-          <div class="card"><div class="card-title">Salaire / semaine</div>
-            <div class="fg"><label class="fg-label">Taux horaire ($/h)</label><input type="number" class="fc fc-num" id="sTaux" oninput="recalculerSalaireAuto()"></div>
-            <div class="fg"><label class="fg-label">Heures / semaine</label><input type="number" class="fc fc-num" id="sH" oninput="recalculerSalaireAuto()"></div>
-            <div class="fg"><label class="fg-label">NET / semaine ($)</label><input type="number" class="fc fc-num" id="sNetM" oninput="recalculerSalaireAuto()"></div>
-            <div style="padding:12px;background:var(--s2);border-radius:var(--r-md);margin-top:12px">
-              <div>NET/mois: <span class="mono" style="color:var(--a-green)" id="liveNetMensuel">0 $</span></div>
-              <div>NET/an: <span class="mono" style="color:var(--a-purple)" id="liveNetAnnuel">0 $</span></div>
-            </div>
-          </div>
-          <div class="card"><div class="card-title">Revenus supp.</div><div id="revenusExtraList"></div><button class="btn btn-ghost btn-sm" onclick="openModal('mRevenuExtra')" style="margin-top:8px;width:100%">+ Ajouter</button></div>
-        </div>
-        <button class="btn btn-primary" style="margin-top:12px;width:100%" onclick="saveRevenus()">💾 Enregistrer</button>
-      </div>
+      <div id="page-revenus" class="page"><div class="section-title">💵 Revenus</div><div class="g2"><div class="card"><div class="card-title">Salaire / semaine</div><div class="fg"><label class="fg-label">Taux horaire ($/h)</label><input type="number" class="fc fc-num" id="sTaux" oninput="recalculerSalaireAuto()"></div><div class="fg"><label class="fg-label">Heures / semaine</label><input type="number" class="fc fc-num" id="sH" oninput="recalculerSalaireAuto()"></div><div class="fg"><label class="fg-label">NET / semaine ($)</label><input type="number" class="fc fc-num" id="sNetM" oninput="recalculerSalaireAuto()"></div><div style="padding:12px;background:var(--s2);border-radius:var(--r-md);margin-top:12px"><div>NET/mois: <span class="mono" style="color:var(--a-green)" id="liveNetMensuel">0 $</span></div><div>NET/an: <span class="mono" style="color:var(--a-purple)" id="liveNetAnnuel">0 $</span></div></div></div><div class="card"><div class="card-title">Revenus supp.</div><div id="revenusExtraList"></div><button class="btn btn-ghost btn-sm" onclick="openModal('mRevenuExtra')" style="margin-top:8px;width:100%">+ Ajouter</button></div></div><button class="btn btn-primary" style="margin-top:12px;width:100%" onclick="saveRevenus()">💾 Enregistrer</button></div>
 
       <!-- CATÉGORIES -->
-      <div id="page-categories" class="page">
-        <div class="section-title">Catégories</div>
-        <div class="card" style="margin-bottom:14px"><div style="display:flex;gap:10px"><input type="text" class="fc" id="newCatName" placeholder="Nouvelle catégorie" style="flex:1"><button class="btn btn-primary" onclick="addCategory()">+</button></div></div>
-        <div class="card"><div id="categoriesList" style="display:flex;flex-wrap:wrap;gap:8px"></div></div>
-        <div class="card" style="margin-top:14px"><div class="card-title">Budgets</div><div id="categoriesBudgetList"></div></div>
-      </div>
+      <div id="page-categories" class="page"><div class="section-title">Catégories</div><div class="card" style="margin-bottom:14px"><div style="display:flex;gap:10px"><input type="text" class="fc" id="newCatName" placeholder="Nouvelle catégorie" style="flex:1"><button class="btn btn-primary" onclick="addCategory()">+</button></div></div><div class="card"><div id="categoriesList" style="display:flex;flex-wrap:wrap;gap:8px"></div></div><div class="card" style="margin-top:14px"><div class="card-title">Budgets</div><div id="categoriesBudgetList"></div></div></div>
 
       <!-- GUICHETS ATM -->
-      <div id="page-guichets" class="page">
-        <div class="section-title">🏧 Guichets ATM</div>
-        <div style="display:flex;gap:8px;margin-bottom:14px"><button class="btn btn-primary btn-sm" onclick="locateATM()">📍 Trouver</button><select class="fc" id="atmRadius" style="width:auto"><option value="1000" selected>1 km</option><option value="2000">2 km</option><option value="5000">5 km</option></select></div>
-        <div id="atm-map"></div>
-        <div class="card" style="margin-top:14px"><div class="card-title">Résultats (<span id="atmCount">0</span>)</div><div id="atmList"></div></div>
-      </div>
+      <div id="page-guichets" class="page"><div class="section-title">🏧 Guichets ATM</div><div style="display:flex;gap:8px;margin-bottom:14px"><button class="btn btn-primary btn-sm" onclick="locateATM()">📍 Trouver</button><select class="fc" id="atmRadius" style="width:auto"><option value="1000" selected>1 km</option><option value="2000">2 km</option><option value="5000">5 km</option></select></div><div id="atm-map"></div><div class="card" style="margin-top:14px"><div class="card-title">Résultats (<span id="atmCount">0</span>)</div><div id="atmList"></div></div></div>
 
       <!-- SYNC -->
-      <div id="page-sync" class="page">
-        <div class="section-title">🔄 Synchronisation</div>
-        <div class="tabs">
-          <button class="tab active" onclick="switchSyncTab('syncQR')">📱 QR Code</button>
-          <button class="tab" onclick="switchSyncTab('syncLive')">🔄 Direct</button>
-          <button class="tab" onclick="switchSyncTab('syncManual')">📂 Manuel</button>
-        </div>
-        <div id="syncQR" class="sync-panel active">
-          <div class="g2">
-            <div class="card"><div class="card-title">📤 Exporter</div>
-              <div id="qrContainer" style="text-align:center;min-height:150px;display:flex;align-items:center;justify-content:center"><p style="color:var(--t3)">Cliquez ci-dessous</p></div>
-              <button class="btn btn-primary" onclick="genererQRCode()" style="width:100%;margin-top:12px">📱 Générer QR Code</button>
-              <button class="btn btn-ghost btn-sm" onclick="copierDonnees()" style="width:100%;margin-top:8px">📋 Copier les données</button>
-            </div>
-            <div class="card"><div class="card-title">📥 Importer</div>
-              <button class="btn btn-primary" onclick="scannerQRCode()" style="width:100%" id="startScanBtn">📷 Scanner QR Code</button>
-              <button class="btn btn-ghost btn-sm" onclick="stopScanner()" style="display:none;width:100%;margin-top:8px" id="stopScanBtn">⏹ Arrêter</button>
-              <video id="scannerVideo" style="display:none;width:100%;max-width:300px;margin:12px auto;border-radius:var(--r-md)" autoplay playsinline></video>
-              <canvas id="scannerCanvas" style="display:none"></canvas>
-              <div class="fg" style="margin-top:12px"><label class="fg-label">Ou collez les données :</label><textarea class="fc" id="jsonPaste" rows="3" placeholder="Collez ici..."></textarea></div>
-              <button class="btn btn-primary btn-sm" onclick="importerColle()" style="width:100%">📥 Importer</button>
-              <div id="scanResult" style="margin-top:8px"></div>
-            </div>
-          </div>
-        </div>
-        <div id="syncLive" class="sync-panel">
-          <div class="card"><div class="card-title">Statut</div><div id="syncStatus"><p style="color:var(--t3)">Prêt</p></div><div style="display:flex;gap:10px;margin-top:12px"><button class="btn btn-primary btn-sm" onclick="startSync()">🔄 Démarrer</button><button class="btn btn-ghost btn-sm" onclick="stopSync()">⏹ Arrêter</button></div></div>
-        </div>
-        <div id="syncManual" class="sync-panel">
-          <div class="g2"><div class="card"><div class="card-title">📤 Exporter</div><button class="btn btn-primary" onclick="exportData()" style="width:100%">📥 Télécharger JSON</button></div><div class="card"><div class="card-title">📥 Importer</div><button class="btn btn-primary" onclick="document.getElementById('importInput').click()" style="width:100%">📤 Charger fichier</button><input type="file" id="importInput" accept=".json" style="display:none" onchange="importData(event)"></div></div>
-        </div>
+      <div id="page-sync" class="page"><div class="section-title">🔄 Synchronisation</div><div class="tabs"><button class="tab active" onclick="switchSyncTab('syncQR')">📱 QR Code</button><button class="tab" onclick="switchSyncTab('syncLive')">🔄 Direct</button><button class="tab" onclick="switchSyncTab('syncManual')">📂 Manuel</button></div>
+        <div id="syncQR" class="sync-panel active"><div class="g2">
+          <div class="card"><div class="card-title">📤 Exporter</div><div id="qrContainer" style="text-align:center;min-height:150px;display:flex;align-items:center;justify-content:center"><p style="color:var(--t3)">Cliquez ci-dessous</p></div><button class="btn btn-primary" onclick="genererQRCode()" style="width:100%;margin-top:12px">📱 Générer QR Code</button><button class="btn btn-ghost btn-sm" onclick="copierDonnees()" style="width:100%;margin-top:8px">📋 Copier les données</button></div>
+          <div class="card"><div class="card-title">📥 Importer</div><button class="btn btn-primary" onclick="scannerQRCode()" style="width:100%" id="startScanBtn">📷 Scanner QR Code</button><button class="btn btn-ghost btn-sm" onclick="stopScanner()" style="display:none;width:100%;margin-top:8px" id="stopScanBtn">⏹ Arrêter</button><video id="scannerVideo" style="display:none;width:100%;max-width:300px;margin:12px auto;border-radius:var(--r-md)" autoplay playsinline></video><canvas id="scannerCanvas" style="display:none"></canvas><div class="fg" style="margin-top:12px"><label class="fg-label">Ou collez les données :</label><textarea class="fc" id="jsonPaste" rows="3" placeholder="Collez ici..."></textarea></div><button class="btn btn-primary btn-sm" onclick="importerColle()" style="width:100%">📥 Importer</button><div id="scanResult" style="margin-top:8px"></div></div>
+        </div></div>
+        <div id="syncLive" class="sync-panel"><div class="card"><div class="card-title">Statut</div><div id="syncStatus"><p style="color:var(--t3)">Prêt</p></div><div style="display:flex;gap:10px;margin-top:12px"><button class="btn btn-primary btn-sm" onclick="startSync()">🔄 Démarrer</button><button class="btn btn-ghost btn-sm" onclick="stopSync()">⏹ Arrêter</button></div></div></div>
+        <div id="syncManual" class="sync-panel"><div class="g2"><div class="card"><div class="card-title">📤 Exporter</div><button class="btn btn-primary" onclick="exportData()" style="width:100%">📥 Télécharger JSON</button></div><div class="card"><div class="card-title">📥 Importer</div><button class="btn btn-primary" onclick="document.getElementById('importInput').click()" style="width:100%">📤 Charger fichier</button><input type="file" id="importInput" accept=".json" style="display:none" onchange="importData(event)"></div></div></div>
       </div>
 
       <!-- PARAMS -->
-      <div id="page-params" class="page">
-        <div class="section-title">Paramètres</div>
-        <div class="card">
-          <div class="fg"><label class="fg-label">Seuil alerte (%)</label><input type="range" id="alertSeuil" min="50" max="100" value="85" class="fc" oninput="document.getElementById('alertSeuilV').textContent=this.value+'%'"><div style="text-align:center" id="alertSeuilV">85%</div></div>
-          <button class="btn btn-primary btn-sm" onclick="saveParams()">Enregistrer</button>
-          <button class="btn btn-danger btn-sm" onclick="clearData()" style="margin-left:8px">Effacer données</button>
-        </div>
-      </div>
+      <div id="page-params" class="page"><div class="section-title">Paramètres</div><div class="card"><div class="fg"><label class="fg-label">Seuil alerte (%)</label><input type="range" id="alertSeuil" min="50" max="100" value="85" class="fc" oninput="document.getElementById('alertSeuilV').textContent=this.value+'%'"><div style="text-align:center" id="alertSeuilV">85%</div></div><button class="btn btn-primary btn-sm" onclick="saveParams()">Enregistrer</button><button class="btn btn-danger btn-sm" onclick="clearData()" style="margin-left:8px">Effacer données</button></div></div>
 
     </div>
   </main>
@@ -475,9 +290,10 @@ document.addEventListener('touchend',function(e){var n=Date.now();if(n-_lt<=300)
 
 <script>
 // ═══════════════════════════════════════════════════════════════════
-// BUDGETCAD PRO — CODE PROPRE & FONCTIONNEL
+// BUDGETCAD PRO v5.5 — COMPLET, PROPRE, FONCTIONNEL
+// Compression LZ-String intégrée pour QR codes
 // ═══════════════════════════════════════════════════════════════════
-const V='5.4.0';
+const V='5.5.0';
 const M=['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
 const JL=['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
 const CATS=['Épicerie','Carburant','Loyer','Téléphone','Dettes/Prêts','Loisirs','Vêtements','Santé','Restaurant','Transport','Non-dépensé','Autre'];
@@ -501,11 +317,10 @@ function loadState(){try{const r=localStorage.getItem('bcad5');if(!r)return;cons
 function toggleTheme(){S.params.theme=S.params.theme==='dark'?'light':'dark';applyTheme(S.params.theme);persist();}
 function applyTheme(t){document.documentElement.setAttribute('data-theme',t);const btn=document.getElementById('themeToggle');if(btn)btn.textContent=t==='dark'?'🌙':'☀️';}
 function toggleDiscret(){S.params.discret=!S.params.discret;document.body.classList.toggle('mode-discret',S.params.discret);persist();}
-
 function updateOnlineStatus(){S._online=navigator.onLine;document.getElementById('offlineIndicator').classList.toggle('show',!S._online);}
 window.addEventListener('online',updateOnlineStatus);window.addEventListener('offline',updateOnlineStatus);
 
-const F=v=>new Intl.NumberFormat('fr-CA',{style:'currency',currency:S.params.devise||'CAD',minimumFractionDigits:2}).format(v||0);
+const F=v=>new Intl.NumberFormat('fr-CA',{style:'currency',currency:S.params.devise||'CAD'}).format(v||0);
 const P=v=>`${(v||0).toFixed(1)}%`;
 const DS=d=>new Date(d+'T12:00:00').toLocaleDateString('fr-CA',{day:'numeric',month:'long',year:'numeric'});
 const TN=()=>new Date().toISOString().slice(0,10);
@@ -612,7 +427,7 @@ let atmMap=null;
 function initMap(){if(atmMap)return;atmMap=L.map('atm-map').setView([46.8,-71.2],12);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OSM'}).addTo(atmMap);}
 function locateATM(){if(!navigator.geolocation){toast('Géolocalisation non disponible','error');return;}navigator.geolocation.getCurrentPosition(async pos=>{const{latitude:lat,longitude:lon}=pos.coords;const radius=parseInt(document.getElementById('atmRadius').value)||1000;if(!atmMap){atmMap=L.map('atm-map').setView([lat,lon],14);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(atmMap);}atmMap.setView([lat,lon],14);atmMap.eachLayer(l=>{if(l instanceof L.Marker)atmMap.removeLayer(l);});L.marker([lat,lon]).addTo(atmMap).bindPopup('📍 Vous êtes ici');try{const r=await fetch(`https://overpass-api.de/api/interpreter?data=[out:json];node["amenity"="atm"](around:${radius},${lat},${lon});out;`);const j=await r.json();document.getElementById('atmCount').textContent=j.elements.length;const el=document.getElementById('atmList');if(!j.elements.length){el.innerHTML='<p style="padding:14px;color:var(--t3)">Aucun guichet</p>';return;}j.elements.forEach(n=>{L.marker([n.lat,n.lon]).addTo(atmMap).bindPopup(n.tags?.name||'ATM');});const sorted=j.elements.map(n=>({...n,dist:Math.round(Math.sqrt(Math.pow((n.lat-lat)*111000,2)+Math.pow((n.lon-lon)*111000*Math.cos(lat*Math.PI/180),2))),name:n.tags?.name||'Guichet'})).sort((a,b)=>a.dist-b.dist);el.innerHTML=sorted.map(n=>`<div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--b2);cursor:pointer" onclick="atmMap.setView([${n.lat},${n.lon}],17)"><span>🏧</span><div style="flex:1"><b>${n.name}</b></div><span style="font-family:var(--f-mono);font-size:11px;color:var(--a-blue)">${n.dist<1000?n.dist+'m':(n.dist/1000).toFixed(1)+'km'}</span></div>`).join('');}catch(e){toast('Erreur API','error');}},()=>toast('Géolocalisation refusée','error'));}
 
-// ═══════════ QR CODE (QRCode.js + jsQR) ═══════════
+// ═══════════ QR CODE AVEC COMPRESSION LZ-STRING ═══════════
 function switchSyncTab(id){
   document.querySelectorAll('.sync-panel').forEach(p=>p.classList.remove('active'));
   document.getElementById(id)?.classList.add('active');
@@ -621,97 +436,84 @@ function switchSyncTab(id){
   if(id!=='syncQR')stopScanner();
 }
 
-function genererQRCode() {
-  const c = document.getElementById('qrContainer');
-  if (!c) return;
+function genererQRCode(){
+  const c=document.getElementById('qrContainer');if(!c)return;
+  c.innerHTML='<p style="padding:20px">⏳ Compression et génération...</p>';
   
-  c.innerHTML = '<p style="padding:20px">⏳ Génération...</p>';
-  
-  // Créer une copie nettoyée des données sans références circulaires
-  const data = {
-    depenses: S.depenses,
-    categories: S.categories,
-    budgets: S.budgets,
-    lieux: S.lieux,
-    descriptions: S.descriptions,
-    objectifs: S.objectifs,
-    cartes: S.cartes,
-    salaire: S.salaire,
-    revenusExtra: S.revenusExtra,
-    params: S.params
+  const data={
+    d:S.depenses.map(d=>({dt:d.date,h:d.heure||'',l:d.lieu||'',ds:d.desc||'',c:d.cat||'',m:d.montant,t:d.type||'',n:d.note||''})),
+    ct:S.categories,b:S.budgets,
+    lx:S.lieux.map(l=>({n:l.nom,c:l.cat||'',i:l.icon||''})),
+    ds:(S.descriptions||[]).slice(0,30),
+    o:(S.objectifs||[]).map(o=>({n:o.nom,c:o.cible,a:o.actuel,i:o.icon||''})),
+    cr:(S.cartes||[]).map(c=>({n:c.nom,t:c.type||'',s:c.solde||0})),
+    sl:S.salaire,re:S.revenusExtra||[],pr:S.params||{}
   };
   
-  const json = JSON.stringify(data);
+  const jsonStr=JSON.stringify(data);
+  const originalSize=jsonStr.length;
   
-  // Vérifier la taille
-  if (json.length > 2500) {
-    c.innerHTML = `
-      <p style="color:var(--a-amber);padding:20px">
-        ⚠️ Données volumineuses (${Math.round(json.length/1024)} Ko)
-      </p>
-      <button class="btn btn-ghost btn-sm" onclick="copierDonnees()">📋 Copier les données</button>
-    `;
+  let compressed;
+  try{compressed=LZString.compressToUTF16(jsonStr);}catch(e){compressed=LZString.compressToBase64(jsonStr);}
+  
+  const compressedSize=compressed.length;
+  const ratio=Math.round((1-compressedSize/originalSize)*100);
+  
+  console.log(`📦 Compression: ${originalSize} → ${compressedSize} (${ratio}%)`);
+  
+  if(compressedSize>8000){
+    c.innerHTML=`
+      <div style="text-align:center;padding:20px">
+        <p style="color:var(--a-amber);margin-bottom:8px">⚠️ Même compressé (${Math.round(compressedSize/1024)} Ko), volume trop important</p>
+        <p style="color:var(--t3);font-size:11px;margin-bottom:12px">${originalSize.toLocaleString()} → ${compressedSize.toLocaleString()} car. (${ratio}% compressé)</p>
+        <button class="btn btn-primary btn-sm" onclick="copierDonnees()" style="width:100%;margin-bottom:8px">📋 Copier les données</button>
+        <button class="btn btn-ghost btn-sm" onclick="exportData()" style="width:100%">📥 Télécharger JSON</button>
+      </div>`;
+    toast(`⚠️ ${Math.round(compressedSize/1024)} Ko — Utilisez Copier/Coller`,'warning',5000);
     return;
   }
   
-  // Nettoyer le container
-  c.innerHTML = '';
-  
-  // Utiliser qrcodejs
-  try {
-    new QRCode(c, {
-      text: json,
-      width: 250,
-      height: 250,
-      colorDark: '#0A1024',
-      colorLight: '#FFFFFF',
-      correctLevel: QRCode.CorrectLevel.L
-    });
-    
-    toast('✅ QR Code généré !', 'success', 3000);
-    
-  } catch(e) {
-    console.error('Erreur QR:', e);
-    c.innerHTML = '<p style="color:var(--a-red);padding:20px">Erreur. Utilisez Copier/Coller.</p>';
-    toast('Erreur QR. Utilisez Copier/Coller.', 'error');
+  c.innerHTML='';
+  try{
+    new QRCode(c,{text:compressed,width:280,height:280,colorDark:'#0A1024',colorLight:'#FFFFFF',correctLevel:QRCode.CorrectLevel.L});
+    const stats=document.createElement('p');
+    stats.style.cssText='font-size:10px;color:var(--a-green);text-align:center;margin-top:8px';
+    stats.textContent=`📦 ${ratio}% compressé (${Math.round(originalSize/1024)}Ko → ${Math.round(compressedSize/1024)}Ko)`;
+    c.appendChild(stats);
+    toast(`✅ QR Code généré ! (${ratio}% compressé)`,'success',3000);
+  }catch(e){
+    console.error('Erreur QR:',e);
+    c.innerHTML='<p style="color:var(--a-red);padding:20px">Erreur de génération</p><button class="btn btn-ghost btn-sm" onclick="copierDonnees()" style="width:100%">📋 Copier les données</button>';
   }
 }
 
-function copierDonnees() {
-  // Créer une copie nettoyée sans références circulaires
-  const data = {
-    depenses: S.depenses,
-    categories: S.categories,
-    budgets: S.budgets,
-    lieux: S.lieux,
-    descriptions: S.descriptions,
-    objectifs: S.objectifs,
-    cartes: S.cartes,
-    salaire: S.salaire,
-    revenusExtra: S.revenusExtra,
-    params: S.params
+function copierDonnees(){
+  const data={
+    d:S.depenses.map(d=>({dt:d.date,h:d.heure||'',l:d.lieu||'',ds:d.desc||'',c:d.cat||'',m:d.montant,t:d.type||'',n:d.note||''})),
+    ct:S.categories,b:S.budgets,lx:S.lieux.map(l=>({n:l.nom,c:l.cat||'',i:l.icon||''})),
+    ds:(S.descriptions||[]).slice(0,30),o:(S.objectifs||[]).map(o=>({n:o.nom,c:o.cible,a:o.actuel,i:o.icon||''})),
+    cr:(S.cartes||[]).map(c=>({n:c.nom,t:c.type||'',s:c.solde||0})),sl:S.salaire,re:S.revenusExtra||[],pr:S.params||{}
   };
-  
-  const text = JSON.stringify(data);
-  
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(text).then(() => toast('✅ Copié !', 'success')).catch(() => toast('Erreur copie', 'error'));
-  } else {
-    const ta = document.createElement('textarea');
-    ta.value = text;
-    ta.style.cssText = 'position:fixed;opacity:0';
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-    toast('✅ Copié !', 'success');
-  }
+  const text=JSON.stringify(data);
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(()=>toast('✅ Copié !','success')).catch(()=>fallbackCopy(text));}
+  else{fallbackCopy(text);}
 }
+function fallbackCopy(text){const ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;top:0;left:0;opacity:0;width:1px;height:1px';document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy');toast('✅ Copié !','success');}catch(e){toast('❌ Erreur copie','error');}document.body.removeChild(ta);}
 
 function importerColle(){
   const text=document.getElementById('jsonPaste')?.value.trim();if(!text){toast('Collez des données','warning');return;}
-  try{const data=JSON.parse(text);if(confirm('Importer ?')){Object.keys(S).forEach(k=>{if(data[k]!==undefined&&k!=='_charts'&&k!=='_atmMap')S[k]=data[k];});persist();renderDashboard();document.getElementById('jsonPaste').value='';toast('✅ Importé !','success');}}catch(e){toast('JSON invalide','error');}
+  try{const d=JSON.parse(text);restoreData(d);document.getElementById('jsonPaste').value='';}catch(e){toast('JSON invalide','error');}
 }
+
+function restoreData(d){
+  if(!confirm(`📥 ${d.d?d.d.length:0} dépenses trouvées. Importer ?`))return;
+  if(d.d)S.depenses=d.d.map(x=>({date:x.dt,heure:x.h,lieu:x.l,desc:x.ds,cat:x.c,montant:x.m,type:x.t,note:x.n,id:Date.now()+Math.random(),carte:'',createdAt:new Date().toISOString()}));
+  if(d.ct)S.categories=d.ct;if(d.b)S.budgets=d.b;if(d.lx)S.lieux=d.lx.map(x=>({nom:x.n,cat:x.c,icon:x.i}));
+  if(d.ds)S.descriptions=d.ds;if(d.o)S.objectifs=d.o.map(x=>({nom:x.n,cible:x.c,actuel:x.a,icon:x.i}));
+  if(d.cr)S.cartes=d.cr.map(x=>({nom:x.n,type:x.t,solde:x.s}));if(d.sl)S.salaire=d.sl;if(d.re)S.revenusExtra=d.re;if(d.pr)S.params=d.pr;
+  persist();renderDashboard();toast('✅ Importé !','success');
+}
+
 let qrActive=false,qrStream=null;
 async function scannerQRCode(){
   const v=document.getElementById('scannerVideo'),s=document.getElementById('startScanBtn'),t=document.getElementById('stopScanBtn');if(!v||!s||!t)return;
@@ -721,12 +523,15 @@ async function scannerQRCode(){
     const canvas=document.getElementById('scannerCanvas');const ctx=canvas.getContext('2d');
     (function scan(){if(!qrActive)return;if(v.readyState>=2){canvas.width=v.videoWidth;canvas.height=v.videoHeight;ctx.drawImage(v,0,0);
       try{const id=ctx.getImageData(0,0,canvas.width,canvas.height);const code=jsQR(id.data,canvas.width,canvas.height);if(code&&code.data){qrActive=false;stopScanner();
-        try{const data=JSON.parse(code.data);if(confirm('QR détecté ! Importer ?')){Object.keys(S).forEach(k=>{if(data[k]!==undefined&&k!=='_charts')S[k]=data[k];});persist();renderDashboard();toast('✅ Importé !','success');}}catch(e){toast('QR invalide','error');}return;}}catch(e){}}
+        let jsonStr;
+        try{jsonStr=LZString.decompressFromUTF16(code.data);if(!jsonStr)jsonStr=LZString.decompressFromBase64(code.data);}catch(e){jsonStr=code.data;}
+        if(!jsonStr){toast('❌ Décompression échouée','error');return;}
+        try{const d=JSON.parse(jsonStr);restoreData(d);}catch(e){toast('❌ Données invalides','error');}
+        return;}}catch(e){}}
       requestAnimationFrame(scan);})();
     toast('📷 Pointez vers le QR code','info');
-  }catch(e){toast('❌ Caméra indisponible. Utilisez Copier/Coller.','error');}
+  }catch(e){toast('❌ Caméra indisponible','error');}
 }
-
 function stopScanner(){qrActive=false;if(qrStream){qrStream.getTracks().forEach(t=>t.stop());qrStream=null;}const v=document.getElementById('scannerVideo'),s=document.getElementById('startScanBtn'),t=document.getElementById('stopScanBtn');if(v)v.style.display='none';if(s)s.style.display='inline-flex';if(t)t.style.display='none';}
 
 let syncChannel=null;
@@ -737,7 +542,7 @@ function renderParams(){document.getElementById('alertSeuil').value=S.params.ale
 function saveParams(){S.params.alertSeuil=parseInt(document.getElementById('alertSeuil').value)||85;persist();toast('Enregistré','success');}
 
 function exportData(){const b=new Blob([JSON.stringify(S,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`budgetcad_${TN()}.json`;a.click();toast('Exporté','success');}
-function importData(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{const d=JSON.parse(ev.target.result);if(confirm('Importer ?')){Object.keys(S).forEach(k=>{if(d[k]!==undefined)S[k]=d[k];});persist();renderDashboard();toast('Importé','success');}}catch{toast('Fichier invalide','error');}};r.readAsText(f);}
+function importData(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{const d=JSON.parse(ev.target.result);restoreData(d);}catch{toast('Fichier invalide','error');}};r.readAsText(f);}
 function clearData(){if(!confirm('⚠️ EFFACER TOUT ?'))return;localStorage.removeItem('bcad5');location.reload();}
 
 function toast(msg,type='info',d=3000){const i={success:'✓',error:'!',warning:'⚠',info:'i'};const el=document.createElement('div');el.className=`toast ${type}`;el.innerHTML=`<span>${i[type]}</span><span>${msg}</span>`;document.getElementById('toastZone').appendChild(el);setTimeout(()=>{el.style.opacity='0';el.style.transition='opacity .3s';setTimeout(()=>el.remove(),300);},d);}
