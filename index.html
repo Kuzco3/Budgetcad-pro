@@ -14,10 +14,10 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -620,15 +620,81 @@ function switchSyncTab(id){
   const btn=document.querySelector(`#page-sync .tab[onclick*="${id}"]`);if(btn)btn.classList.add('active');
   if(id!=='syncQR')stopScanner();
 }
-function genererQRCode(){
-  const c=document.getElementById('qrContainer');if(!c)return;
-  c.innerHTML='<p style="padding:20px">⏳ Génération...</p>';
-  const data=JSON.parse(JSON.stringify(S));delete data._charts;delete data._atmMap;delete data._currentDate;delete data._editId;delete data._editRevenuIndex;
-  const json=JSON.stringify(data);
-  if(json.length>2500){c.innerHTML='<p style="color:var(--a-amber);padding:20px">⚠️ Volumineux ('+Math.round(json.length/1024)+' Ko). Utilisez Copier.</p>';return;}
-  c.innerHTML='';const canvas=document.createElement('canvas');c.appendChild(canvas);
-  QRCode.toCanvas(canvas,json,{width:250,margin:2,color:{dark:'#0A1024',light:'#FFFFFF'}},function(err){if(err){c.innerHTML='<p style="color:var(--a-red)">Erreur</p>';return;}toast('✅ QR Code généré !','success');});
+function genererQRCode() {
+  const c = document.getElementById('qrContainer');
+  if (!c) return;
+  
+  c.innerHTML = '<p style="padding:20px">⏳ Génération...</p>';
+  
+  // Préparer les données
+  const data = JSON.parse(JSON.stringify(S));
+  delete data._charts;
+  delete data._atmMap;
+  delete data._currentDate;
+  delete data._editId;
+  delete data._editRevenuIndex;
+  const json = JSON.stringify(data);
+  
+  // Vérifier la taille
+  if (json.length > 2500) {
+    c.innerHTML = `
+      <p style="color:var(--a-amber);padding:20px">
+        ⚠️ Données volumineuses (${Math.round(json.length/1024)} Ko)
+      </p>
+      <button class="btn btn-ghost btn-sm" onclick="copierDonnees()">📋 Copier les données</button>
+    `;
+    return;
+  }
+  
+  // Nettoyer le container
+  c.innerHTML = '';
+  
+  // Utiliser qrcodejs (window.QRCode)
+  try {
+    new QRCode(c, {
+      text: json,
+      width: 250,
+      height: 250,
+      colorDark: '#0A1024',
+      colorLight: '#FFFFFF',
+      correctLevel: QRCode.CorrectLevel.L
+    });
+    
+    toast('✅ QR Code généré !', 'success', 3000);
+    
+    // Ajouter bouton agrandir
+    setTimeout(() => {
+      const btn = document.createElement('button');
+      btn.className = 'btn btn-ghost btn-sm';
+      btn.textContent = '🔍 Agrandir';
+      btn.style.marginTop = '8px';
+      btn.onclick = function() {
+        const modal = document.createElement('div');
+        modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:9999;display:flex;align-items:center;justify-content:center;cursor:pointer';
+        c.querySelector('canvas').style.width = '300px';
+        c.querySelector('canvas').style.height = '300px';
+        const clone = c.querySelector('canvas').cloneNode(true);
+        clone.style.width = '80vmin';
+        clone.style.height = '80vmin';
+        clone.style.maxWidth = '500px';
+        clone.style.maxHeight = '500px';
+        c.querySelector('canvas').style.width = '250px';
+        c.querySelector('canvas').style.height = '250px';
+        modal.appendChild(clone);
+        modal.onclick = function() { modal.remove(); };
+        document.body.appendChild(modal);
+      };
+      c.appendChild(btn);
+    }, 100);
+    
+  } catch(e) {
+    console.error('Erreur QR:', e);
+    c.innerHTML = '<p style="color:var(--a-red);padding:20px">Erreur. Utilisez Copier/Coller.</p>';
+    toast('Erreur QR. Utilisez Copier/Coller.', 'error');
+  }
 }
+
+
 function copierDonnees(){
   const data=JSON.parse(JSON.stringify(S));delete data._charts;delete data._atmMap;delete data._currentDate;
   const text=JSON.stringify(data);
