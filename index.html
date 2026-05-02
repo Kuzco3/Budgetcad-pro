@@ -620,19 +620,27 @@ function switchSyncTab(id){
   const btn=document.querySelector(`#page-sync .tab[onclick*="${id}"]`);if(btn)btn.classList.add('active');
   if(id!=='syncQR')stopScanner();
 }
+
 function genererQRCode() {
   const c = document.getElementById('qrContainer');
   if (!c) return;
   
   c.innerHTML = '<p style="padding:20px">⏳ Génération...</p>';
   
-  // Préparer les données
-  const data = JSON.parse(JSON.stringify(S));
-  delete data._charts;
-  delete data._atmMap;
-  delete data._currentDate;
-  delete data._editId;
-  delete data._editRevenuIndex;
+  // Créer une copie nettoyée des données sans références circulaires
+  const data = {
+    depenses: S.depenses,
+    categories: S.categories,
+    budgets: S.budgets,
+    lieux: S.lieux,
+    descriptions: S.descriptions,
+    objectifs: S.objectifs,
+    cartes: S.cartes,
+    salaire: S.salaire,
+    revenusExtra: S.revenusExtra,
+    params: S.params
+  };
+  
   const json = JSON.stringify(data);
   
   // Vérifier la taille
@@ -649,7 +657,7 @@ function genererQRCode() {
   // Nettoyer le container
   c.innerHTML = '';
   
-  // Utiliser qrcodejs (window.QRCode)
+  // Utiliser qrcodejs
   try {
     new QRCode(c, {
       text: json,
@@ -662,31 +670,6 @@ function genererQRCode() {
     
     toast('✅ QR Code généré !', 'success', 3000);
     
-    // Ajouter bouton agrandir
-    setTimeout(() => {
-      const btn = document.createElement('button');
-      btn.className = 'btn btn-ghost btn-sm';
-      btn.textContent = '🔍 Agrandir';
-      btn.style.marginTop = '8px';
-      btn.onclick = function() {
-        const modal = document.createElement('div');
-        modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:9999;display:flex;align-items:center;justify-content:center;cursor:pointer';
-        c.querySelector('canvas').style.width = '300px';
-        c.querySelector('canvas').style.height = '300px';
-        const clone = c.querySelector('canvas').cloneNode(true);
-        clone.style.width = '80vmin';
-        clone.style.height = '80vmin';
-        clone.style.maxWidth = '500px';
-        clone.style.maxHeight = '500px';
-        c.querySelector('canvas').style.width = '250px';
-        c.querySelector('canvas').style.height = '250px';
-        modal.appendChild(clone);
-        modal.onclick = function() { modal.remove(); };
-        document.body.appendChild(modal);
-      };
-      c.appendChild(btn);
-    }, 100);
-    
   } catch(e) {
     console.error('Erreur QR:', e);
     c.innerHTML = '<p style="color:var(--a-red);padding:20px">Erreur. Utilisez Copier/Coller.</p>';
@@ -694,13 +677,37 @@ function genererQRCode() {
   }
 }
 
-
-function copierDonnees(){
-  const data=JSON.parse(JSON.stringify(S));delete data._charts;delete data._atmMap;delete data._currentDate;
-  const text=JSON.stringify(data);
-  if(navigator.clipboard){navigator.clipboard.writeText(text).then(()=>toast('✅ Copié !','success')).catch(()=>toast('Erreur','error'));}
-  else{const ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);toast('✅ Copié !','success');}
+function copierDonnees() {
+  // Créer une copie nettoyée sans références circulaires
+  const data = {
+    depenses: S.depenses,
+    categories: S.categories,
+    budgets: S.budgets,
+    lieux: S.lieux,
+    descriptions: S.descriptions,
+    objectifs: S.objectifs,
+    cartes: S.cartes,
+    salaire: S.salaire,
+    revenusExtra: S.revenusExtra,
+    params: S.params
+  };
+  
+  const text = JSON.stringify(data);
+  
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => toast('✅ Copié !', 'success')).catch(() => toast('Erreur copie', 'error'));
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;opacity:0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    toast('✅ Copié !', 'success');
+  }
 }
+
 function importerColle(){
   const text=document.getElementById('jsonPaste')?.value.trim();if(!text){toast('Collez des données','warning');return;}
   try{const data=JSON.parse(text);if(confirm('Importer ?')){Object.keys(S).forEach(k=>{if(data[k]!==undefined&&k!=='_charts'&&k!=='_atmMap')S[k]=data[k];});persist();renderDashboard();document.getElementById('jsonPaste').value='';toast('✅ Importé !','success');}}catch(e){toast('JSON invalide','error');}
@@ -719,6 +726,7 @@ async function scannerQRCode(){
     toast('📷 Pointez vers le QR code','info');
   }catch(e){toast('❌ Caméra indisponible. Utilisez Copier/Coller.','error');}
 }
+
 function stopScanner(){qrActive=false;if(qrStream){qrStream.getTracks().forEach(t=>t.stop());qrStream=null;}const v=document.getElementById('scannerVideo'),s=document.getElementById('startScanBtn'),t=document.getElementById('stopScanBtn');if(v)v.style.display='none';if(s)s.style.display='inline-flex';if(t)t.style.display='none';}
 
 let syncChannel=null;
