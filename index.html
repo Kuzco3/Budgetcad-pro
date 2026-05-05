@@ -460,9 +460,124 @@ function copierDonnees(){const data={d:S.depenses.map(d=>({dt:d.date,l:d.lieu||'
 function importerColle(){const text=document.getElementById('jsonPaste')?.value.trim();if(!text){toast('Collez des données','warning');return;}try{const d=JSON.parse(text);restaurer(d);}catch(e){toast('JSON invalide','error');}}
 function restaurer(d){if(!confirm(`${d.d?d.d.length:0} transactions. Importer ?`))return;if(d.d)S.depenses=d.d.map(x=>({date:x.dt,lieu:x.l,cat:x.c,montant:x.m,id:Date.now()+Math.random(),heure:'',desc:'',type:'Variable',note:'',createdAt:new Date().toISOString()}));if(d.ct)S.categories=d.ct;if(d.b)S.budgets=d.b;if(d.sl)S.salaire=d.sl;if(d.pr)S.params=d.pr;persist();renderDashboard();document.getElementById('jsonPaste').value='';toast('✅ Importé !','success');}
 
-let qrActive=false,qrStream=null;
-async function scannerQRCode(){const v=document.getElementById('scannerVideo'),s=document.getElementById('startScanBtn'),t=document.getElementById('stopScanBtn');if(!v)return;try{qrStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:640,height:480}});v.srcObject=qrStream;v.style.display='block';s.style.display='none';t.style.display='inline-flex';qrActive=true;const canvas=document.getElementById('scannerCanvas');const ctx=canvas.getContext('2d');(function scan(){if(!qrActive)return;if(v.readyState>=2){canvas.width=v.videoWidth;canvas.height=v.videoHeight;ctx.drawImage(v,0,0);try{const id=ctx.getImageData(0,0,canvas.width,canvas.height);const code=jsQR(id.data,canvas.width,canvas.height);if(code&&code.data){qrActive=false;stopScanner();let js=code.data;try{const d=LZString.decompressFromBase64(code.data);if(d)js=d;}catch(e){}try{const d=JSON.parse(js);restaurer(d);document.getElementById('scanResult').innerHTML='<div class="alert success">✅ Importé !</div>';}catch(e){toast('Données invalides','error');}return;}}catch(e){}}requestAnimationFrame(scan);})();toast('📷 Pointez vers le QR code','info');}catch(e){toast('Caméra indisponible','error');}}
-function stopScanner(){qrActive=false;if(qrStream){qrStream.getTracks().forEach(t=>t.stop());qrStream=null;}const v=document.getElementById('scannerVideo'),s=document.getElementById('startScanBtn'),t=document.getElementById('stopScanBtn');if(v)v.style.display='none';if(s)s.style.display='inline-flex';if(t)t.style.display='none';}
+
+let qrActive = false;
+let qrStream = null;
+
+async function scannerQRCode() {
+  const v = document.getElementById('scannerVideo');
+  const s = document.getElementById('startScanBtn');
+  const t = document.getElementById('stopScanBtn');
+  if (!v || !s || !t) return;
+  
+  stopScanner();
+  
+  try {
+    qrStream = await navigator.mediaDevices.getUserMedia({
+      video: { 
+        facingMode: 'environment',
+        width: { ideal: 640 },
+        height: { ideal: 480 }
+      }
+    });
+    
+    v.srcObject = qrStream;
+    v.style.display = 'block';
+    s.style.display = 'none';
+    t.style.display = 'inline-flex';
+    qrActive = true;
+    
+    const canvas = document.getElementById('scannerCanvas');
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    
+    toast('📷 Pointez la caméra vers le QR code', 'info', 3000);
+    
+    await v.play();
+    
+    function scan() {
+      if (!qrActive) return;
+      
+      if (v.readyState >= v.HAVE_CURRENT_DATA) {
+        canvas.width = v.videoWidth;
+        canvas.height = v.videoHeight;
+        
+        if (canvas.width === 0 || canvas.height === 0) {
+          requestAnimationFrame(scan);
+          return;
+        }
+        
+        ctx.drawImage(v, 0, 0, canvas.width, canvas.height);
+        
+        try {
+          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          
+          let code = jsQR(imageData.data, canvas.width, canvas.height, {
+            inversionAttempts: 'attemptBoth'
+          });
+          
+          if (!code) {
+            code = jsQR(imageData.data, canvas.width, canvas.height, {
+              inversionAttempts: 'dontInvert'
+            });
+          }
+          
+          if (code && code.data) {
+            qrActive = false;
+            stopScanner();
+            
+            let jsonStr = code.data;
+            try {
+              const decompressed = LZString.decompressFromBase64(code.data);
+              if (decompressed) jsonStr = decompressed;
+            } catch(e) {}
+            
+            try {
+              const data = JSON.parse(jsonStr);
+              restaurer(data);
+              document.getElementById('scanResult').innerHTML = '<div class="alert success">✅ QR Code scanné et importé !</div>';
+            } catch(e) {
+              toast('QR Code détecté mais données invalides', 'error');
+            }
+            return;
+          }
+        } catch(e) {}
+      }
+      
+      requestAnimationFrame(scan);
+    }
+    
+    setTimeout(() => scan(), 500);
+    
+  } catch(e) {
+    if (e.name === 'NotAllowedError') {
+      toast('❌ Accès à la caméra refusé. Vérifiez les paramètres.', 'error', 5000);
+    } else if (e.name === 'NotFoundError') {
+      toast('❌ Aucune caméra trouvée.', 'error', 5000);
+    } else {
+      toast('❌ Erreur caméra', 'error', 5000);
+    }
+  }
+}
+
+function stopScanner() {
+  qrActive = false;
+  
+  if (qrStream) {
+    qrStream.getTracks().forEach(track => track.stop());
+    qrStream = null;
+  }
+  
+  const v = document.getElementById('scannerVideo');
+  const s = document.getElementById('startScanBtn');
+  const t = document.getElementById('stopScanBtn');
+  
+  if (v) {
+    v.srcObject = null;
+    v.style.display = 'none';
+  }
+  if (s) s.style.display = 'inline-flex';
+  if (t) t.style.display = 'none';
+}
 
 function renderParams(){document.getElementById('alertSeuil').value=S.params.alertSeuil;document.getElementById('alertSeuilV').textContent=S.params.alertSeuil+'%';}
 function saveParams(){S.params.alertSeuil=parseInt(document.getElementById('alertSeuil').value)||85;persist();toast('Enregistré ✓','success');}
