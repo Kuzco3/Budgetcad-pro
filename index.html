@@ -330,8 +330,8 @@ let S={
 CATS.forEach(c=>{S.budgets[c]=c==='Loyer'?600:c==='Épicerie'?250:c==='Carburant'?200:100;});
 S.depFix={'Épicerie':216.5,'Carburant':216.5,'Loyer':600,'Téléphone':25,'Dettes/Prêts':50,'Divers':100};
 
-function persist(){try{localStorage.setItem('bcad5',JSON.stringify({version:V,...S}));}catch(e){}}
-function loadState(){try{const r=localStorage.getItem('bcad5');if(!r)return;const d=JSON.parse(r);Object.keys(d).forEach(k=>{if(d[k]!==undefined&&k!=='version'&&k!=='_charts')S[k]=d[k];});applyTheme(S.params.theme);if(S.params.discret)document.body.classList.add('mode-discret');}catch(e){}}
+function persist(){try{localStorage.setItem('bcad4', JSON.stringify({version: V, ...S}));}catch(e){}}
+function loadState(){try{const r = localStorage.getItem('bcad4');if(!r)return;const d=JSON.parse(r);Object.keys(d).forEach(k=>{if(d[k]!==undefined&&k!=='version'&&k!=='_charts')S[k]=d[k];});applyTheme(S.params.theme);if(S.params.discret)document.body.classList.add('mode-discret');}catch(e){}}
 
 function toggleTheme(){S.params.theme=S.params.theme==='dark'?'light':'dark';applyTheme(S.params.theme);persist();}
 function applyTheme(t){document.documentElement.setAttribute('data-theme',t);document.getElementById('themeToggle').textContent=t==='dark'?'🌙':'☀️';}
@@ -469,7 +469,7 @@ function saveParams(){S.params.alertSeuil=parseInt(document.getElementById('aler
 function exportData(){const b=new Blob([JSON.stringify(S,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`budgetcad_${TN()}.json`;a.click();toast('Exporté','success');}
 function importData(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{const d=JSON.parse(ev.target.result);restaurer(d);}catch{toast('Fichier invalide','error');}};r.readAsText(f);}
 function exportCSV(){const h=['Date','Heure','Lieu','Description','Catégorie','Montant','Type'];const rows=S.depenses.sort((a,b)=>a.date>b.date?-1:1).map(d=>[d.date,d.heure||'',d.lieu||'',d.desc||'',d.cat||'',d.montant,d.type||'']);const csv=[h,...rows].map(r=>r.map(v=>`"${v}"`).join(',')).join('\n');const b=new Blob(['\uFEFF'+csv],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`budgetcad_${TN()}.csv`;a.click();toast('CSV exporté','success');}
-function clearData(){if(!confirm('⚠️ Effacer TOUTES les données ?'))return;localStorage.removeItem('bcad5');location.reload();}
+function clearData(){if(!confirm('⚠️ Effacer TOUTES les données ?'))return;localStorage.removeItem('bcad4');location.reload();}
 
 function toast(msg,type='info',d=3000){const i={success:'✓',error:'!',warning:'⚠',info:'i'};const el=document.createElement('div');el.className=`toast ${type}`;el.innerHTML=`<span>${i[type]}</span><span>${msg}</span>`;document.getElementById('toastZone').appendChild(el);setTimeout(()=>{el.style.opacity='0';el.style.transition='opacity .3s';setTimeout(()=>el.remove(),300);},d);}
 
