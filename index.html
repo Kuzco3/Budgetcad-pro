@@ -36,6 +36,12 @@
   --f-mono: 'JetBrains Mono', 'Courier New', monospace;
   --r-sm: 8px; --r-md: 12px; --r-lg: 18px; --r-xl: 24px;
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  
+  [data-palette="or-noir"] { --a-blue: #C8A97E; --a-blue-d: #A8885E; --a-blue-g: rgba(200,169,126,0.18); --a-green: #C8A97E; --a-green-g: rgba(200,169,126,0.14); --a-red: #E05555; --a-red-g: rgba(224,85,85,0.14); --a-amber: #D4A04A; --a-amber-g: rgba(212,160,74,0.14); --a-purple: #A78BFA; --a-teal: #5B8DEF; }
+[data-palette="cuivre-rose"] { --s0: #1A0F0A; --s1: #241812; --s2: #2E2018; --s3: #382820; --a-blue: #E8A87C; --a-blue-d: #D4956B; --a-blue-g: rgba(232,168,124,0.18); --a-green: #E8A87C; --a-green-g: rgba(232,168,124,0.14); --a-red: #E07373; --a-amber: #F0B890; --a-purple: #D4A0A0; --a-teal: #C4956B; --t1: #F5EDE6; --t2: #B8A090; --t3: #6B5A4E; }
+[data-palette="emeraude-nuit"] { --s0: #020E0A; --s1: #061812; --s2: #0A221A; --s3: #0E2C22; --a-blue: #4DB6AC; --a-blue-d: #3A9E94; --a-blue-g: rgba(77,182,172,0.18); --a-green: #4DB6AC; --a-green-g: rgba(77,182,172,0.14); --a-red: #E07373; --a-amber: #80CBC4; --a-purple: #90A4AE; --a-teal: #26A69A; --t1: #E8F5F2; --t2: #90B8B0; --t3: #4A6B64; }
+[data-palette="amethyste"] { --s0: #0A0618; --s1: #140E24; --s2: #1E1630; --s3: #281E3C; --a-blue: #B39DDB; --a-blue-d: #9575CD; --a-blue-g: rgba(179,157,219,0.18); --a-green: #B39DDB; --a-green-g: rgba(179,157,219,0.14); --a-red: #E07373; --a-amber: #D1C4E9; --a-purple: #7E57C2; --a-teal: #C8A97E; --t1: #F0EDF8; --t2: #A098C0; --t3: #5A5280; }
+[data-palette="onyx-minimal"] { --s0: #080808; --s1: #121212; --s2: #1A1A1A; --s3: #242424; --a-blue: #A0A0A0; --a-blue-d: #808080; --a-blue-g: rgba(160,160,160,0.18); --a-green: #A0A0A0; --a-green-g: rgba(160,160,160,0.14); --a-red: #C0C0C0; --a-amber: #B0B0B0; --a-purple: #909090; --a-teal: #888888; --t1: #E8E8E8; --t2: #A0A0A0; --t3: #606060; }
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{font-size:16px;-webkit-tap-highlight-color:transparent;scroll-behavior:smooth}
@@ -48,7 +54,7 @@ body{font-family:var(--f-sans);background:var(--s0);color:var(--t1);min-height:1
 .brand-logo{width:40px;height:40px;border-radius:var(--r-md);flex-shrink:0;overflow:hidden;box-shadow:0 0 0 1px var(--b1),0 4px 20px rgba(77,143,255,0.25)}
 .brand-logo svg{width:100%;height:100%}
 .brand-text{min-width:0}
-.brand-name{font-size:16px;font-weight:800;letter-spacing:-.025em;background:linear-gradient(135deg,var(--t1) 0%,var(--a-blue) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.brand-name{font-size:16px;font-weight:800;letter-spacing:-.025em;background:linear-gradient(135deg,var(--t1) 0%,var(--a-blue) 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 .brand-tag{font-size:10px;color:var(--t3);letter-spacing:.06em;text-transform:uppercase;margin-top:1px}
 .nav{flex:1;padding:14px 10px;overflow-y:auto}
 .nav-group{margin-bottom:22px}
@@ -271,8 +277,34 @@ tbody tr:hover{background:rgba(77,143,255,0.03)}
 
       <div id="page-sync" class="page"><div class="section-title">Synchronisation</div><div class="tabs"><button class="tab active" onclick="switchSyncTab('syncQR')">📱 QR Code</button><button class="tab" onclick="switchSyncTab('syncManual')">📂 Fichier</button></div><div id="syncQR" class="tab-panel active"><div class="g2"><div class="card"><div class="card-title">📤 Export</div><div id="qrContainer" style="text-align:center;min-height:160px;display:flex;align-items:center;justify-content:center"><p style="color:var(--t3)">Cliquez ci-dessous</p></div><button class="btn btn-primary" onclick="genererQRCode()" style="width:100%;margin-top:12px">📱 Générer QR Code</button><button class="btn btn-ghost btn-sm" onclick="copierDonnees()" style="width:100%;margin-top:8px">📋 Copier les données</button></div><div class="card"><div class="card-title">📥 Import</div><button class="btn btn-primary" onclick="scannerQRCode()" style="width:100%" id="startScanBtn">📷 Scanner QR Code</button><button class="btn btn-ghost btn-sm" onclick="stopScanner()" style="display:none;width:100%;margin-top:8px" id="stopScanBtn">⏹ Arrêter</button><video id="scannerVideo" style="display:none;width:100%;max-width:280px;margin:10px auto;border-radius:var(--r-md)" autoplay playsinline></video><canvas id="scannerCanvas" style="display:none"></canvas><div class="fg" style="margin-top:12px"><label class="fg-label">Ou collez les données :</label><textarea class="fc" id="jsonPaste" rows="3"></textarea></div><button class="btn btn-primary btn-sm" onclick="importerColle()" style="width:100%">📥 Importer</button></div></div></div><div id="syncManual" class="tab-panel"><div class="g2"><div class="card"><div class="card-title">📤 Export</div><button class="btn btn-primary" onclick="exportData()" style="width:100%">📥 Télécharger JSON</button></div><div class="card"><div class="card-title">📥 Import</div><button class="btn btn-primary" onclick="document.getElementById('importInput').click()" style="width:100%">📤 Charger fichier</button><input type="file" id="importInput" accept=".json" style="display:none" onchange="importData(event)"></div></div></div></div>
 
-      <div id="page-params" class="page"><div class="section-title">Paramètres</div><div class="card"><div class="fg"><label class="fg-label">Seuil alerte (%)</label><input type="range" id="alertSeuil" min="50" max="100" value="85" class="fc" oninput="document.getElementById('alertSeuilV').textContent=this.value+'%'"><div style="text-align:center;color:var(--a-blue)" id="alertSeuilV">85%</div></div><button class="btn btn-primary btn-sm" onclick="saveParams()">Enregistrer</button><button class="btn btn-danger btn-sm" onclick="clearData()" style="margin-left:8px">Effacer données</button></div></div>
-
+<div id="page-params" class="page">
+  <div class="section-title">Paramètres</div>
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-title">🎨 Palette de couleurs</div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <button class="palette-btn active" data-palette="or-noir" onclick="changerPalette('or-noir',this)" style="display:flex;align-items:center;width:100%;padding:12px 16px;border-radius:var(--r-md);font-size:13px;cursor:pointer;border:1px solid var(--b2);background:var(--s2);color:var(--t2);text-align:left">
+        <span style="display:inline-block;width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,#C8A97E,#5B8DEF);margin-right:8px"></span>Or Noir
+      </button>
+      <button class="palette-btn" data-palette="cuivre-rose" onclick="changerPalette('cuivre-rose',this)" style="display:flex;align-items:center;width:100%;padding:12px 16px;border-radius:var(--r-md);font-size:13px;cursor:pointer;border:1px solid var(--b2);background:var(--s2);color:var(--t2);text-align:left">
+        <span style="display:inline-block;width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,#E8A87C,#D4956B);margin-right:8px"></span>Cuivre Rosé
+      </button>
+      <button class="palette-btn" data-palette="emeraude-nuit" onclick="changerPalette('emeraude-nuit',this)" style="display:flex;align-items:center;width:100%;padding:12px 16px;border-radius:var(--r-md);font-size:13px;cursor:pointer;border:1px solid var(--b2);background:var(--s2);color:var(--t2);text-align:left">
+        <span style="display:inline-block;width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,#4DB6AC,#26A69A);margin-right:8px"></span>Émeraude Nuit
+      </button>
+      <button class="palette-btn" data-palette="amethyste" onclick="changerPalette('amethyste',this)" style="display:flex;align-items:center;width:100%;padding:12px 16px;border-radius:var(--r-md);font-size:13px;cursor:pointer;border:1px solid var(--b2);background:var(--s2);color:var(--t2);text-align:left">
+        <span style="display:inline-block;width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,#B39DDB,#7E57C2);margin-right:8px"></span>Améthyste
+      </button>
+      <button class="palette-btn" data-palette="onyx-minimal" onclick="changerPalette('onyx-minimal',this)" style="display:flex;align-items:center;width:100%;padding:12px 16px;border-radius:var(--r-md);font-size:13px;cursor:pointer;border:1px solid var(--b2);background:var(--s2);color:var(--t2);text-align:left">
+        <span style="display:inline-block;width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,#A0A0A0,#606060);margin-right:8px"></span>Onyx Minimal
+      </button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="fg"><label class="fg-label">Seuil alerte (%)</label><input type="range" id="alertSeuil" min="50" max="100" value="85" class="fc" oninput="document.getElementById('alertSeuilV').textContent=this.value+'%'"><div style="text-align:center;color:var(--a-blue)" id="alertSeuilV">85%</div></div>
+    <button class="btn btn-primary btn-sm" onclick="saveParams()">Enregistrer</button>
+    <button class="btn btn-danger btn-sm" onclick="clearData()" style="margin-left:8px">Effacer données</button>
+  </div>
+</div>
       <div id="page-legal" class="page"><div class="section-title">📜 Mentions légales</div><div class="tabs"><button class="tab active" onclick="switchLegalTab('privacy')">🔒 Confidentialité</button><button class="tab" onclick="switchLegalTab('terms')">📋 Conditions</button></div><div id="privacy" class="tab-panel active"><div class="card"><div class="card-title">Politique de confidentialité</div><p style="font-size:13px;color:var(--t2);line-height:1.8">BudgetCAD ne collecte aucune donnée personnelle. Tout est stocké localement dans votre navigateur. Aucune donnée n'est transmise à des serveurs externes.</p></div></div><div id="terms" class="tab-panel"><div class="card"><div class="card-title">Conditions d'utilisation</div><p style="font-size:13px;color:var(--t2);line-height:1.8">Application fournie "telle quelle" pour usage personnel. Ne remplace pas un conseiller financier.</p></div></div></div>
 
     </div>
@@ -331,7 +363,7 @@ function loadState() {
     if (!S.objectifs) S.objectifs = [];
     if (!S.cartes) S.cartes = [];
     if (!S.params.theme) S.params.theme = 'dark';
-    applyTheme(S.params.theme);
+    applyTheme(S.params.theme); if (S.params.palette) document.documentElement.setAttribute('data-palette', S.params.palette);
   } catch(e) {}
 }
 
@@ -376,6 +408,15 @@ function epargneM(y, m) {
     return dt.getFullYear()===y && dt.getMonth()===m && d.type==='Épargne';
   }).reduce((a,d) => a + d.montant, 0);
   return Math.max(0, ep + (salM() - depsM(y,m) - nonDepenseM(y,m)));
+}
+
+function changerPalette(palette, btn) {
+  document.querySelectorAll('.palette-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.documentElement.setAttribute('data-palette', palette);
+  S.params.palette = palette;
+  persist();
+  toast('✅ Palette appliquée !', 'success', 2000);
 }
 
 function catM(cat, y, m) {
