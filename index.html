@@ -269,8 +269,42 @@ tbody tr:hover{background:rgba(77,143,255,0.03)}
 
       <div id="page-epargne" class="page"><div style="display:flex;justify-content:space-between;margin-bottom:20px"><div class="section-title">Épargne</div><button class="btn btn-primary btn-sm" onclick="openModal('mObj')">+ Objectif</button></div><div class="kpi-grid" id="kpiEpargne"></div><div class="card"><div class="card-title">Mes objectifs</div><div id="objList"></div></div></div>
 
-      <div id="page-revenus" class="page"><div class="section-title">Revenus</div><div class="g2"><div class="card"><div class="card-title">Salaire / semaine</div><div class="fg"><label class="fg-label">Taux horaire ($/h)</label><input type="number" class="fc fc-num" id="sTaux" oninput="recalcRevenus()"></div><div class="fg"><label class="fg-label">Heures / semaine</label><input type="number" class="fc fc-num" id="sH" oninput="recalcRevenus()"></div><div class="fg"><label class="fg-label">Salaire NET / semaine ($)</label><input type="number" class="fc fc-num" id="sNetM" oninput="recalcRevenus()"></div><div style="margin-top:12px;color:var(--a-green);font-family:var(--f-mono)" id="revenuRecap"></div></div><div class="card"><div class="card-title">Revenus supplémentaires</div><div id="revenusExtraList"></div><button class="btn btn-ghost btn-sm" onclick="openModal('mRevenuExtra')" style="margin-top:8px;width:100%">+ Ajouter</button></div></div><button class="btn btn-primary" onclick="saveRevenus()" style="margin-top:12px;width:100%">Enregistrer</button></div>
-
+<div id="page-revenus" class="page">
+  <div class="section-title">💵 Revenus</div>
+  <div class="section-sub">Suivi réel de vos salaires par semaine</div>
+  
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-title">💰 Salaires réels enregistrés</div>
+    <div id="salairesReelsList"><p style="color:var(--t3);padding:12px;text-align:center">Aucun salaire enregistré</p></div>
+    <button class="btn btn-primary btn-sm" onclick="openModal('mSalaireReel')" style="width:100%;margin-top:12px">＋ Ajouter un salaire réel</button>
+  </div>
+  
+  <div class="g2" style="margin-bottom:16px">
+    <div class="card" style="text-align:center"><div class="kpi-label">Salaire moyen</div><div class="kpi-val" style="color:var(--a-green)" id="statSalaireMoyen">0 $</div><div class="kpi-sub" id="statNbSalaires">0 salaire(s)</div></div>
+    <div class="card" style="text-align:center"><div class="kpi-label">Min — Max</div><div class="kpi-val" style="color:var(--a-teal)" id="statSalaireMinMax">0 $ — 0 $</div></div>
+  </div>
+  
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-title">📊 Salaire estimé (si aucun réel)</div>
+    <div class="g2">
+      <div class="fg"><label class="fg-label">Taux horaire ($/h)</label><input type="number" class="fc fc-num" id="sTaux" oninput="majStatSalaires()"></div>
+      <div class="fg"><label class="fg-label">Heures / semaine</label><input type="number" class="fc fc-num" id="sH" oninput="majStatSalaires()"></div>
+    </div>
+    <div class="g3">
+      <div class="fg"><label class="fg-label">NET moyen ($)</label><input type="number" class="fc fc-num" id="sNetM" oninput="majStatSalaires()"></div>
+      <div class="fg"><label class="fg-label">NET min ($)</label><input type="number" class="fc fc-num" id="sNetMin" oninput="majStatSalaires()"></div>
+      <div class="fg"><label class="fg-label">NET max ($)</label><input type="number" class="fc fc-num" id="sNetMax" oninput="majStatSalaires()"></div>
+    </div>
+  </div>
+  
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-title">📥 Revenus supplémentaires</div>
+    <div id="revenusExtraList"></div>
+    <button class="btn btn-ghost btn-sm" onclick="openModal('mRevenuExtra')" style="margin-top:8px;width:100%">＋ Ajouter un revenu</button>
+  </div>
+  
+  <button class="btn btn-primary" onclick="saveRevenus()" style="width:100%;padding:14px;font-size:15px">💾 Enregistrer tous les revenus</button>
+</div>
       <div id="page-categories" class="page"><div class="section-title">Catégories</div><div class="card" style="margin-bottom:14px"><div style="display:flex;gap:10px"><input type="text" class="fc" id="newCatName" placeholder="Nouvelle catégorie" style="flex:1"><button class="btn btn-primary" onclick="addCategory()">+</button></div></div><div class="card"><div id="categoriesList" style="display:flex;flex-wrap:wrap;gap:8px"></div></div><div class="card" style="margin-top:14px"><div class="card-title">Budgets</div><div id="categoriesBudgetList"></div></div></div>
 
       <div id="page-guichets" class="page"><div class="section-title">🏧 Guichets ATM</div><div style="display:flex;gap:8px;margin-bottom:14px"><button class="btn btn-primary btn-sm" onclick="locateATM()">📍 Trouver</button><select class="fc" id="atmRadius" style="width:auto"><option value="1000">1 km</option><option value="2000">2 km</option><option value="5000">5 km</option></select></div><div id="atm-map"></div><div class="card" style="margin-top:14px"><div class="card-title">Résultats (<span id="atmCount">0</span>)</div><div id="atmList"></div></div></div>
@@ -320,6 +354,19 @@ tbody tr:hover{background:rgba(77,143,255,0.03)}
 
 <div class="modal-bg" id="mObj"><div class="modal" style="max-width:400px"><div class="modal-hdr"><div class="modal-title">Objectif</div><button class="btn btn-ghost btn-icon btn-sm" style="margin-left:auto" onclick="closeModal('mObj')">✕</button></div><div class="modal-body"><div class="fg"><label class="fg-label">Nom</label><input type="text" class="fc" id="oNom"></div><div class="g2"><div class="fg"><label class="fg-label">Cible ($)</label><input type="number" class="fc fc-num" id="oCible"></div><div class="fg"><label class="fg-label">Actuel ($)</label><input type="number" class="fc fc-num" id="oActuel"></div></div></div><div class="modal-ftr"><button class="btn btn-ghost" onclick="closeModal('mObj')">Annuler</button><button class="btn btn-primary" onclick="saveObj()">Créer</button></div></div></div>
 
+<div class="modal-bg" id="mSalaireReel">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-hdr"><div class="modal-title">Ajouter un salaire réel</div><button class="btn btn-ghost btn-icon btn-sm" style="margin-left:auto" onclick="closeModal('mSalaireReel')">✕</button></div>
+    <div class="modal-body">
+      <div class="fg"><label class="fg-label">Date de réception</label><input type="date" class="fc" id="srDate"></div>
+      <div class="fg"><label class="fg-label">Heure (optionnel)</label><input type="time" class="fc" id="srHeure"></div>
+      <div class="fg"><label class="fg-label">Montant NET reçu ($)</label><input type="number" class="fc fc-num" id="srMontant" step="0.01" placeholder="Ex: 1050.00"></div>
+      <div class="fg"><label class="fg-label">Note (optionnel)</label><input type="text" class="fc" id="srNote" placeholder="Ex: Paye du 8 mai"></div>
+    </div>
+    <div class="modal-ftr"><button class="btn btn-ghost" onclick="closeModal('mSalaireReel')">Annuler</button><button class="btn btn-primary" onclick="saveSalaireReel()">Ajouter</button></div>
+  </div>
+</div>
+
 <script>
 // ═══════════════════════════════════════════════════════════════════
 // BUDGETCAD — CODE ORIGINAL PRÉSERVÉ + AMÉLIORATIONS
@@ -351,19 +398,108 @@ function persist() {
   try { localStorage.setItem('bcad4', JSON.stringify(d)); } catch(e) {}
 }
 
+// Salaires réels
+function afficherSalairesReels() {
+  const el = document.getElementById('salairesReelsList');
+  if (!el) return;
+  if (!S.salaire.salairesReels) S.salaire.salairesReels = [];
+  const salaires = S.salaire.salairesReels;
+  if (!salaires.length) { el.innerHTML = '<p style="color:var(--t3);padding:12px;text-align:center">Aucun salaire enregistré</p>'; return; }
+  el.innerHTML = salaires.sort((a,b) => new Date(b.date) - new Date(a.date)).map((s, i) => 
+    `<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--b3)">
+      <div style="font-size:20px">💵</div>
+      <div style="flex:1"><div style="font-weight:600">${F(s.montant)}</div><div style="font-size:10px;color:var(--t3)">${DS(s.date)}${s.heure?' · '+s.heure:''}${s.note?' · '+s.note:''}</div></div>
+      <button class="btn btn-danger btn-icon btn-sm" onclick="supprimerSalaireReel(${i})">✕</button>
+    </div>`
+  ).join('');
+  majStatSalaires();
+}
+
+function saveSalaireReel() {
+  const date = document.getElementById('srDate').value;
+  const heure = document.getElementById('srHeure').value;
+  const montant = parseFloat(document.getElementById('srMontant').value);
+  const note = document.getElementById('srNote').value.trim();
+  if (!date || isNaN(montant) || montant <= 0) { toast('Date et montant requis', 'error'); return; }
+  if (!S.salaire.salairesReels) S.salaire.salairesReels = [];
+  S.salaire.salairesReels.push({date, heure, montant, note});
+  persist(); closeModal('mSalaireReel'); afficherSalairesReels(); renderDashboard();
+  toast('✅ Salaire de ' + F(montant) + ' enregistré !', 'success');
+}
+
+function supprimerSalaireReel(index) {
+  if (!confirm('Supprimer ce salaire ?')) return;
+  S.salaire.salairesReels.splice(index, 1);
+  persist(); afficherSalairesReels(); renderDashboard();
+}
+
+function majStatSalaires() {
+  const elM = document.getElementById('statSalaireMoyen');
+  const elMM = document.getElementById('statSalaireMinMax');
+  const elNb = document.getElementById('statNbSalaires');
+  const reels = S.salaire.salairesReels || [];
+  if (reels.length > 0) {
+    const total = reels.reduce((a,s) => a + (s.montant||0), 0);
+    const moy = total / reels.length;
+    const min = Math.min(...reels.map(s => s.montant||0));
+    const max = Math.max(...reels.map(s => s.montant||0));
+    if (elM) elM.textContent = F(moy);
+    if (elMM) elMM.textContent = F(min) + ' — ' + F(max);
+    if (elNb) elNb.textContent = reels.length + ' salaire(s)';
+  } else {
+    const nm = parseFloat(document.getElementById('sNetM')?.value) || S.salaire.netM || 0;
+    if (elM) elM.textContent = F(nm);
+    if (elMM) elMM.textContent = F(S.salaire.netMin||0) + ' — ' + F(S.salaire.netMax||0);
+    if (elNb) elNb.textContent = '0 salaire (estimé)';
+  }
+}
+
+// Modifier le calcul du salaire mensuel pour utiliser les salaires réels
+const salM = () => {
+  const maintenant = new Date();
+  const debutMois = new Date(maintenant.getFullYear(), maintenant.getMonth(), 1);
+  const reels = S.salaire.salairesReels || [];
+  const salairesCeMois = reels.filter(s => new Date(s.date) >= debutMois);
+  let total = 0;
+  if (salairesCeMois.length > 0) {
+    total = salairesCeMois.reduce((a, s) => a + (s.montant||0), 0);
+  } else {
+    total = (S.salaire.netM || 0) * 4.33;
+  }
+  (S.revenusExtra || []).forEach(r => {
+    const m = r.frequence === 'Trimestriel' ? 1/3 : r.frequence === 'Annuel' ? 1/12 : 1;
+    total += (r.montant || 0) * m;
+  });
+  return total;
+};
+
+// Modifier renderRevenus pour initialiser les salaires réels
+function renderRevenus() {
+  if (!S.salaire.salairesReels) S.salaire.salairesReels = [];
+  document.getElementById('sTaux').value = S.salaire.taux || 40;
+  document.getElementById('sH').value = S.salaire.h || 40;
+  document.getElementById('sNetM').value = S.salaire.netM || 1020;
+  document.getElementById('sNetMin').value = S.salaire.netMin || 1009;
+  document.getElementById('sNetMax').value = S.salaire.netMax || 1120;
+  afficherSalairesReels();
+  renderRevenusExtra();
+  majStatSalaires();
+}
+
 function loadState() {
   try {
     const raw = localStorage.getItem('bcad4');
     if (!raw) return;
     const d = JSON.parse(raw);
-    // Restaurer toutes les clés existantes
     Object.keys(d).forEach(k => { if (d[k] !== undefined && k !== 'version') S[k] = d[k]; });
-    // Ajouter les champs manquants si nécessaire
     if (!S.revenusExtra) S.revenusExtra = [];
     if (!S.objectifs) S.objectifs = [];
     if (!S.cartes) S.cartes = [];
+    if (!S.params) S.params = {alertSeuil:85, devise:'CAD', theme:'dark', palette:'or-noir'};
     if (!S.params.theme) S.params.theme = 'dark';
-    applyTheme(S.params.theme); if (S.params.palette) document.documentElement.setAttribute('data-palette', S.params.palette);
+    if (!S.params.palette) S.params.palette = 'or-noir';
+    applyTheme(S.params.theme);
+    document.documentElement.setAttribute('data-palette', S.params.palette);
   } catch(e) {}
 }
 
@@ -411,8 +547,12 @@ function epargneM(y, m) {
 }
 
 function changerPalette(palette, btn) {
-  document.querySelectorAll('.palette-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.palette-btn').forEach(b => {
+    b.classList.remove('active');
+    b.style.background = 'var(--s2)';
+  });
   btn.classList.add('active');
+  btn.style.background = 'var(--a-blue-g)';
   document.documentElement.setAttribute('data-palette', palette);
   S.params.palette = palette;
   persist();
@@ -508,6 +648,11 @@ function openModal(id, opts={}) {
     selTypeVal(opts.type || 'Fixe');
     S._editId = opts.id || null;
     document.getElementById('mDepTitle').textContent = opts.id ? 'Modifier' : 'Nouvelle dépense';
+    if (id === 'mSalaireReel') {
+    document.getElementById('srDate').value = TN();
+    document.getElementById('srHeure').value = '';
+    document.getElementById('srMontant').value = '';
+    document.getElementById('srNote').value = '';}
   }
   if (id==='mBudget') renderBudgetModal();
   if (id==='mRevenuExtra') {
@@ -748,12 +893,18 @@ function renderDeps() {
 }
 
 function populateFilters() {
-  const ms = document.getElementById('fMois'); if (!ms) return;
-  const keys = [...new Set(S.depenses.map(d => MK(d.date)))].sort().reverse();
-  ms.innerHTML = '<option value="">Tous les mois</option>' + keys.map(k => {
-    const [y,m] = k.split('-'); return `<option value="${k}">${M[parseInt(m)-1]} ${y}</option>`;
-  }).join('');
-  const cs = document.getElementById('fCat'); if (cs) cs.innerHTML = '<option value="">Toutes</option>' + S.categories.map(c => `<option>${c}</option>`).join('');
+  const ms = document.getElementById('fMois');
+  if (ms) {
+    const keys = [...new Set(S.depenses.map(d => MK(d.date)))].sort().reverse();
+    const currentValue = ms.value;
+    ms.innerHTML = '<option value="">Tous les mois</option>' + keys.map(k => {
+      const [y, m] = k.split('-');
+      const selected = k === currentValue ? ' selected' : '';
+      return `<option value="${k}"${selected}>${M[parseInt(m)-1]} ${y}</option>`;
+    }).join('');
+  }
+  const cs = document.getElementById('fCat');
+  if (cs) cs.innerHTML = '<option value="">Toutes les catégories</option>' + S.categories.map(c => `<option>${c}</option>`).join('');
 }
 
 function calChange(d) {
@@ -1067,11 +1218,14 @@ document.addEventListener('keydown', e => {
 
 function init() {
   loadState();
+  if (!S.params.palette) S.params.palette = 'or-noir';
+  document.documentElement.setAttribute('data-palette', S.params.palette);
   document.getElementById('dDate').value = TN();
   document.getElementById('dHeure').value = TM();
   autoCalcNonDepense();
   renderDashboard();
 }
+
 document.addEventListener('DOMContentLoaded', init);
 </script>
 </body>
