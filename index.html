@@ -635,6 +635,97 @@ function closeSidebar() {
   document.getElementById('sidebarOverlay').classList.remove('open');
 }
 
+// ═══════════ SALAIRES RÉELS ═══════════
+// Ajouter ces fonctions dans ton <script>, avant la fonction init()
+
+if (!S.salaire.salairesReels) S.salaire.salairesReels = [];
+
+function afficherSalairesReels() {
+  const el = document.getElementById('salairesReelsList');
+  if (!el) return;
+  const salaires = S.salaire.salairesReels || [];
+  if (!salaires.length) { 
+    el.innerHTML = '<p style="color:var(--t3);padding:12px;text-align:center">Aucun salaire enregistré</p>'; 
+    return; 
+  }
+  el.innerHTML = salaires.sort((a,b) => new Date(b.date) - new Date(a.date)).map((s, i) => 
+    '<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--b3)">' +
+      '<div style="font-size:20px">💵</div>' +
+      '<div style="flex:1"><b>' + F(s.montant) + '</b><div style="font-size:10px;color:var(--t3)">' + DS(s.date) + (s.heure?' · '+s.heure:'') + (s.note?' · '+s.note:'') + '</div></div>' +
+      '<button class="btn btn-danger btn-sm" onclick="supprimerSalaireReel(' + i + ')">✕</button>' +
+    '</div>'
+  ).join('');
+  majStatSalaires();
+}
+
+function saveSalaireReel() {
+  var date = document.getElementById('srDate').value;
+  var heure = document.getElementById('srHeure').value;
+  var montant = parseFloat(document.getElementById('srMontant').value);
+  var note = document.getElementById('srNote').value.trim();
+  if (!date || isNaN(montant) || montant <= 0) { toast('Date et montant requis', 'error'); return; }
+  if (!S.salaire.salairesReels) S.salaire.salairesReels = [];
+  S.salaire.salairesReels.push({date: date, heure: heure, montant: montant, note: note});
+  persist();
+  closeModal('mSalaireReel');
+  afficherSalairesReels();
+  renderDashboard();
+  toast('✅ Salaire de ' + F(montant) + ' enregistré !', 'success');
+}
+
+function supprimerSalaireReel(index) {
+  if (!confirm('Supprimer ce salaire ?')) return;
+  S.salaire.salairesReels.splice(index, 1);
+  persist();
+  afficherSalairesReels();
+  renderDashboard();
+}
+
+function majStatSalaires() {
+  var elM = document.getElementById('statSalaireMoyen');
+  var elMM = document.getElementById('statSalaireMinMax');
+  var elNb = document.getElementById('statNbSalaires');
+  var reels = S.salaire.salairesReels || [];
+  
+  if (reels.length > 0) {
+    var total = 0;
+    reels.forEach(function(s) { total += s.montant || 0; });
+    var moy = total / reels.length;
+    var min = Math.min.apply(null, reels.map(function(s) { return s.montant || 0; }));
+    var max = Math.max.apply(null, reels.map(function(s) { return s.montant || 0; }));
+    if (elM) elM.textContent = F(moy);
+    if (elMM) elMM.textContent = F(min) + ' — ' + F(max);
+    if (elNb) elNb.textContent = reels.length + ' salaire(s)';
+  } else {
+    if (elM) elM.textContent = F(S.salaire.netM || 0);
+    if (elMM) elMM.textContent = F(S.salaire.netMin || 0) + ' — ' + F(S.salaire.netMax || 0);
+    if (elNb) elNb.textContent = '0 salaire (estimé)';
+  }
+}
+
+
+// ═══════════ CORRECTION FILTRE MOIS ═══════════
+// Remplace ta fonction populateFilters par :
+function populateFilters() {
+  var ms = document.getElementById('fMois');
+  if (ms) {
+    var keys = [];
+    S.depenses.forEach(function(d) {
+      var k = MK(d.date);
+      if (keys.indexOf(k) === -1) keys.push(k);
+    });
+    keys.sort().reverse();
+    var cur = ms.value;
+    ms.innerHTML = '<option value="">Tous les mois</option>' + keys.map(function(k) {
+      var parts = k.split('-');
+      var selected = k === cur ? ' selected' : '';
+      return '<option value="' + k + '"' + selected + '>' + M[parseInt(parts[1])-1] + ' ' + parts[0] + '</option>';
+    }).join('');
+  }
+  var cs = document.getElementById('fCat');
+  if (cs) cs.innerHTML = '<option value="">Toutes catégories</option>' + S.categories.map(function(c) { return '<option>' + c + '</option>'; }).join('');
+}
+
 function openModal(id, opts={}) {
   document.getElementById(id).classList.add('open');
   if (id==='mDep') {
@@ -648,6 +739,8 @@ function openModal(id, opts={}) {
     selTypeVal(opts.type || 'Fixe');
     S._editId = opts.id || null;
     document.getElementById('mDepTitle').textContent = opts.id ? 'Modifier' : 'Nouvelle dépense';
+
+    // ═══════════ INIT SALAIRE RÉEL DANS openModal ═══════════
     if (id === 'mSalaireReel') {
     document.getElementById('srDate').value = TN();
     document.getElementById('srHeure').value = '';
@@ -659,6 +752,7 @@ function openModal(id, opts={}) {
     document.getElementById('reNom').value = '';
     document.getElementById('reMontant').value = '';
   }
+  
 }
 
 function closeModal(id) { document.getElementById(id).classList.remove('open'); S._editId = null; }
