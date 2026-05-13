@@ -545,9 +545,133 @@ function clearData() { if(!confirm('⚠️ Effacer TOUTES les données ?'))retur
 function switchLegalTab(id) { document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));document.getElementById(id)?.classList.add('active');document.querySelectorAll('#page-legal .tab').forEach(t=>t.classList.remove('active'));const btn=document.querySelector(`#page-legal .tab[onclick*="${id}"]`);if(btn)btn.classList.add('active'); }
 
 function toast(msg,type='info',d=3000) { const i={success:'✓',error:'✕',warning:'⚠',info:'ℹ'};const el=document.createElement('div');el.className=`toast ${type}`;el.innerHTML=`<span style="font-weight:700;color:${type==='success'?'var(--a-green)':type==='error'?'var(--a-red)':'var(--a-amber)'}">${i[type]}</span><span>${msg}</span>`;document.getElementById('toastZone').appendChild(el);setTimeout(()=>{el.style.opacity='0';el.style.transition='opacity .3s';setTimeout(()=>el.remove(),300);},d); }
+function genererQRCode() {
+  const c = document.getElementById('qrContainer');
+  if (!c) return;
+  c.innerHTML = '<p style="padding:20px">⏳ Génération...</p>';
+  
+  const data = {
+    d: S.depenses.slice(-150).map(d => ({dt:d.date, l:d.lieu||'', c:d.cat||'', m:d.montant})),
+    ct: S.categories, b: S.budgets, sl: S.salaire, pr: S.params
+  };
+  
+  const json = JSON.stringify(data);
+  
+  // Vérifier si les données sont trop volumineuses
+  if (json.length > 2500) {
+    c.innerHTML = '<p style="color:var(--a-amber);padding:20px;text-align:center">⚠️ Données trop volumineuses pour un QR code.<br><br><button class="btn btn-primary btn-sm" onclick="copierDonnees()">📋 Copier les données</button></p>';
+    return;
+  }
+  
+  c.innerHTML = '<div style="text-align:center"></div>';
+  
+  try {
+    new QRCode(c, {
+      text: json,
+      width: 280,
+      height: 280,
+      colorDark: '#0A1024',
+      colorLight: '#FFFFFF',
+      correctLevel: QRCode.CorrectLevel.L
+    });
+    toast('✅ QR Code généré !', 'success');
+  } catch(e) {
+    c.innerHTML = '<p style="color:var(--a-red);padding:20px;text-align:center">Erreur de génération<br><button class="btn btn-ghost btn-sm" onclick="copierDonnees()">📋 Copier les données</button></p>';
+    console.error('Erreur QR:', e);
+  }
+}
+
+function copierDonnees() {
+  const data = {
+    d: S.depenses.map(d => ({dt:d.date, l:d.lieu||'', c:d.cat||'', m:d.montant})),
+    ct: S.categories, b: S.budgets, sl: S.salaire, pr: S.params
+  };
+  const text = JSON.stringify(data);
+  
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => toast('✅ Données copiées !', 'success'));
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;opacity:0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    toast('✅ Données copiées !', 'success');
+  }
+}
+
+function importerColle() {
+  const text = document.getElementById('jsonPaste')?.value.trim();
+  if (!text) { toast('Collez des données', 'warning'); return; }
+  try {
+    const d = JSON.parse(text);
+    if (!confirm(`${d.d?d.d.length:0} transactions. Importer ?`)) return;
+    if (d.d) S.depenses = d.d.map(x => ({
+      date:x.dt, lieu:x.l||'', cat:x.c||'', montant:x.m, id:Date.now()+Math.random(),
+      heure:'', desc:'', type:'Variable', note:'', createdAt:new Date().toISOString()
+    }));
+    if (d.ct) S.categories = d.ct;
+    if (d.b) S.budgets = d.b;
+    if (d.sl) S.salaire = d.sl;
+    if (d.pr) S.params = d.pr;
+    persist(); renderDashboard();
+    document.getElementById('jsonPaste').value = '';
+    toast('✅ Importé !', 'success');
+  } catch(e) { toast('JSON invalide', 'error'); }
+}
+
+let qrActive = false, qrStream = null;
+async function scannerQRCode() {
+  const v = document.getElementById('scannerVideo'), s = document.getElementById('startScanBtn'), t = document.getElementById('stopScanBtn');
+  if (!v) return;
+  stopScanner();
+  try {
+    qrStream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:640},height:{ideal:480}}});
+    v.srcObject = qrStream; v.style.display = 'block'; s.style.display = 'none'; t.style.display = 'inline-flex'; qrActive = true;
+    const canvas = document.getElementById('scannerCanvas'), ctx = canvas.getContext('2d',{willReadFrequently:true});
+    await v.play();
+    (function scan() {
+      if (!qrActive) return;
+      if (v.readyState >= 2) {
+        canvas.width = v.videoWidth; canvas.height = v.videoHeight;
+        if (canvas.width === 0 || canvas.height === 0) { requestAnimationFrame(scan); return; }
+        ctx.drawImage(v,0,0);
+        try {
+          const id = ctx.getImageData(0,0,canvas.width,canvas.height);
+          let code = jsQR(id.data,canvas.width,canvas.height,{inversionAttempts:'attemptBoth'});
+          if (!code) code = jsQR(id.data,canvas.width,canvas.height,{inversionAttempts:'dontInvert'});
+          if (code && code.data) {
+            qrActive = false; stopScanner();
+            try {
+              const d = JSON.parse(code.data);
+              if (!confirm(`${d.d?d.d.length:0} transactions. Importer ?`)) return;
+              if (d.d) S.depenses = d.d.map(x => ({date:x.dt,lieu:x.l||'',cat:x.c||'',montant:x.m,id:Date.now()+Math.random(),heure:'',desc:'',type:'Variable',note:'',createdAt:new Date().toISOString()}));
+              if (d.ct) S.categories = d.ct; if (d.b) S.budgets = d.b; if (d.sl) S.salaire = d.sl; if (d.pr) S.params = d.pr;
+              persist(); renderDashboard(); toast('✅ Importé !', 'success');
+            } catch(e) { toast('Données invalides', 'error'); }
+            return;
+          }
+        } catch(e) {}
+      }
+      requestAnimationFrame(scan);
+    })();
+    toast('📷 Pointez vers le QR code', 'info');
+  } catch(e) { toast('❌ Caméra indisponible', 'error'); }
+}
+function stopScanner() {
+  qrActive = false;
+  if (qrStream) { qrStream.getTracks().forEach(t => t.stop()); qrStream = null; }
+  const v = document.getElementById('scannerVideo'), s = document.getElementById('startScanBtn'), t = document.getElementById('stopScanBtn');
+  if (v) { v.srcObject = null; v.style.display = 'none'; }
+  if (s) s.style.display = 'inline-flex';
+  if (t) t.style.display = 'none';
+}
 
 function init() { loadState(); if(!S.params.palette)S.params.palette='or-noir'; document.documentElement.setAttribute('data-palette',S.params.palette); document.getElementById('dDate').value=TN(); document.getElementById('dHeure').value=TM(); autoCalcNonDepense(); renderDashboard(); }
 document.addEventListener('DOMContentLoaded', init);
+
 </script>
 </body>
 </html>
