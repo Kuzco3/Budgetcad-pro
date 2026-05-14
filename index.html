@@ -237,8 +237,16 @@ tbody tr:hover{background:rgba(77,143,255,0.03)}
 
       <div id="page-budget" class="page"><div class="section-title">Budget & Suivi</div><div class="section-sub">Analyse détaillée par catégorie</div><div id="budgetAlertes" style="margin-bottom:16px"></div><div class="card"><div class="card-title">📋 Budgets vs Réel</div><div id="budgetList"></div><button class="btn btn-ghost btn-sm" onclick="openModal('mBudget')" style="margin-top:12px">⚙️ Modifier les budgets</button></div></div>
 
-      <div id="page-graphiques" class="page"><div class="section-title">Graphiques & Analyses</div><div class="g2" style="margin-bottom:18px"><div class="card"><div class="card-title">🥧 Répartition des dépenses</div><div style="display:flex;align-items:center;gap:20px"><div style="flex:1;max-width:280px"><canvas id="chartMultiRing"></canvas></div><div id="legendMultiRing" style="flex:1;min-width:180px"></div></div></div><div class="card"><div class="card-title">📊 Budgets vs Dépenses réelles</div><div style="height:300px"><canvas id="chartBarH"></canvas></div></div></div><div class="card"><div class="card-title">📈 Évolution mensuelle</div><div style="height:280px"><canvas id="chartEvo"></canvas></div></div></div>
-
+<div id="page-graphiques" class="page"><div class="section-title">Graphiques & Analyses</div>
+  <div class="card" style="margin-bottom:14px;padding:14px"><div style="display:flex;align-items:center;gap:10px"><label class="fg-label" style="margin-bottom:0;white-space:nowrap">Mois :</label><select class="fc" id="fMoisGraph" onchange="renderGraphiques()" style="width:auto;min-width:180px"></select></div></div>
+  <div class="tabs"><button class="tab active" onclick="switchGraphTab('graphDepenses')">📊 Dépenses</button><button class="tab" onclick="switchGraphTab('graphSalaires')">💵 Salaires</button></div>
+  <div id="graphDepenses" class="tab-panel active">
+    <div class="g2" style="margin-bottom:18px"><div class="card"><div class="card-title">🥧 Répartition des dépenses</div><div style="display:flex;align-items:center;gap:20px"><div style="flex:1;max-width:280px"><canvas id="chartMultiRing"></canvas></div><div id="legendMultiRing" style="flex:1;min-width:180px"></div></div></div><div class="card"><div class="card-title">📊 Budgets vs Dépenses réelles</div><div style="height:300px"><canvas id="chartBarH"></canvas></div></div></div><div class="card"><div class="card-title">📈 Évolution mensuelle</div><div style="height:280px"><canvas id="chartEvo"></canvas></div></div>
+  </div>
+  <div id="graphSalaires" class="tab-panel">
+    <div class="g2" style="margin-bottom:18px"><div class="card"><div class="card-title">💵 Salaires réels par semaine</div><div style="height:300px"><canvas id="chartSalairesReels"></canvas></div></div><div class="card"><div class="card-title">📊 Cumul mensuel vs Estimé</div><div style="height:300px"><canvas id="chartCumulSalaires"></canvas></div></div></div>
+  </div>
+</div>
       <div id="page-comparaison" class="page"><div class="section-title">📊 Comparaison mois/mois</div><div class="card" style="margin-bottom:16px"><div class="card-title">📈 Évolution</div><div style="height:280px"><canvas id="chartComparaison"></canvas></div></div><div class="card"><div class="card-title">📋 Détail</div><div class="tbl-wrap"><table><thead><tr><th>Mois</th><th>Revenus</th><th>Dépenses</th><th>vs préc.</th><th>Tendance</th></tr></thead><tbody id="tblComparaison"></tbody></table></div></div></div>
 
       <div id="page-revenus" class="page"><div class="section-title">💵 Revenus</div><div class="card" style="margin-bottom:16px"><div class="card-title">💰 Salaires réels enregistrés</div><div id="salairesReelsList"><p style="color:var(--t3);padding:12px;text-align:center">Aucun salaire enregistré</p></div><button class="btn btn-primary btn-sm" onclick="openModal('mSalaireReel')" style="width:100%;margin-top:12px">＋ Ajouter un salaire réel</button></div><div class="g2" style="margin-bottom:16px"><div class="card" style="text-align:center"><div class="kpi-label">Salaire moyen</div><div class="kpi-val" style="color:var(--a-green)" id="statSalaireMoyen">0 $</div></div><div class="card" style="text-align:center"><div class="kpi-label">Min — Max</div><div class="kpi-val" style="color:var(--a-teal)" id="statSalaireMinMax">0 $ — 0 $</div></div></div><div class="card" style="margin-bottom:16px"><div class="card-title">📊 Salaire estimé</div><div class="g2"><div class="fg"><label class="fg-label">Taux horaire ($/h)</label><input type="number" class="fc fc-num" id="sTaux"></div><div class="fg"><label class="fg-label">Heures / semaine</label><input type="number" class="fc fc-num" id="sH"></div></div><div class="g3"><div class="fg"><label class="fg-label">NET moyen</label><input type="number" class="fc fc-num" id="sNetM"></div><div class="fg"><label class="fg-label">NET min</label><input type="number" class="fc fc-num" id="sNetMin"></div><div class="fg"><label class="fg-label">NET max</label><input type="number" class="fc fc-num" id="sNetMax"></div></div></div><div class="card" style="margin-bottom:16px"><div class="card-title">📥 Revenus supplémentaires</div><div id="revenusExtraList"></div><button class="btn btn-ghost btn-sm" onclick="openModal('mRevenuExtra')" style="margin-top:8px;width:100%">＋ Ajouter</button></div><button class="btn btn-primary" onclick="saveRevenus()" style="width:100%;padding:14px">💾 Enregistrer</button></div>
@@ -257,15 +265,17 @@ tbody tr:hover{background:rgba(77,143,255,0.03)}
         <button class="palette-btn" data-palette="onyx-minimal" onclick="changerPalette('onyx-minimal',this)" style="display:flex;align-items:center;width:100%;padding:12px 16px;border-radius:var(--r-md);font-size:13px;cursor:pointer;border:1px solid var(--b2);background:var(--s2);color:var(--t2);text-align:left"><span style="display:inline-block;width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,#A0A0A0,#606060);margin-right:8px"></span>Onyx Minimal</button>
       </div></div><div class="card"><div class="fg"><label class="fg-label">Seuil alerte (%)</label><input type="range" id="alertSeuil" min="50" max="100" value="85" class="fc" oninput="document.getElementById('alertSeuilV').textContent=this.value+'%'"><div style="text-align:center;color:var(--a-blue)" id="alertSeuilV">85%</div></div><button class="btn btn-primary btn-sm" onclick="saveParams()">Enregistrer</button><button class="btn btn-danger btn-sm" onclick="clearData()" style="margin-left:8px">Effacer données</button></div></div>
 
-      <div id="page-legal" class="page"><div class="section-title">📜 Mentions légales</div><div class="tabs"><button class="tab active" onclick="switchLegalTab('privacy')">🔒 Confidentialité</button><button class="tab" onclick="switchLegalTab('terms')">📋 Conditions</button></div><div id="privacy" class="tab-panel active"><div class="card"><p style="font-size:13px;color:var(--t2)">BudgetCAD ne collecte aucune donnée personnelle. Tout est stocké localement.</p></div></div><div id="terms" class="tab-panel"><div class="card"><p style="font-size:13px;color:var(--t2)">Application fournie "telle quelle" pour usage personnel.</p></div></div></div>
-
+<div id="page-legal" class="page"><div class="section-title">📜 Mentions légales</div><div class="tabs"><button class="tab active" onclick="switchLegalTab('privacy')">🔒 Confidentialité</button><button class="tab" onclick="switchLegalTab('terms')">📋 Conditions</button><button class="tab" onclick="switchLegalTab('copyright')">© Copyright</button></div>
+  <div id="privacy" class="tab-panel active"><div class="card"><div class="legal-content"><h2>🔒 Politique de confidentialité</h2><p style="color:var(--t3);font-style:italic">Dernière mise à jour : Mai 2026</p><h3>1. Collecte des données</h3><p>BudgetCAD ne collecte <strong>aucune donnée personnelle</strong>. Toutes les informations financières que vous saisissez sont stockées <strong>exclusivement sur votre appareil</strong> dans le stockage local (localStorage) de votre navigateur. Aucune donnée n'est transmise à un serveur externe.</p><h3>2. Utilisation des données</h3><p>Vos données sont utilisées <strong>uniquement</strong> pour afficher vos tableaux de bord, calculer vos soldes et générer des graphiques.</p><h3>3. Partage des données</h3><p>BudgetCAD ne partage, ne vend et ne transmet <strong>aucune donnée</strong> à des tiers.</p><h3>4. Sécurité</h3><p>Données stockées localement. Aucune connexion Internet requise.</p><h3>5. Vos droits (LPRPDE)</h3><p>Conformément à la <em>Loi sur la protection des renseignements personnels et les documents électroniques</em> du Canada, vous avez le droit d'accéder, d'exporter et de supprimer vos données.</p></div></div></div>
+  <div id="terms" class="tab-panel"><div class="card"><div class="legal-content"><h2>📋 Conditions d'utilisation</h2><p style="color:var(--t3);font-style:italic">Dernière mise à jour : Mai 2026</p><h3>1. Description</h3><p>BudgetCAD est un gestionnaire de finances personnelles fourni « tel quel » sans garantie.</p><h3>2. Usage</h3><p>Usage personnel uniquement. Ne pas utiliser à des fins illégales.</p><h3>3. Responsabilité</h3><p>BudgetCAD ne remplace pas un conseiller financier professionnel.</p></div></div></div>
+  <div id="copyright" class="tab-panel"><div class="card"><div class="legal-content"><h2>© Droit d'auteur</h2><p style="color:var(--t3);font-style:italic">Conformément à la Loi sur le droit d'auteur du Canada (L.R.C. 1985, ch. C-42)</p><h3>1. Titularité</h3><p>Le code source, le design et l'interface de BudgetCAD sont protégés par le droit d'auteur. Tous droits réservés © 2026.</p><h3>2. Licence</h3><p>Utilisation gratuite pour usage personnel. Toute reproduction ou modification sans autorisation est interdite.</p><h3>3. Marques</h3><p>Les logos d'entreprises sont des marques déposées de leurs propriétaires respectifs.</p></div></div></div>
+</div>
     </div>
   </main>
 </div>
 
 <!-- MODAUX -->
-<div class="modal-bg" id="mDep"><div class="modal"><div class="modal-hdr"><div class="modal-title" id="mDepTitle">Nouvelle dépense</div><button class="btn btn-ghost btn-icon btn-sm" style="margin-left:auto" onclick="closeModal('mDep')">✕</button></div><div class="modal-body"><div class="g2"><div class="fg"><label class="fg-label">Date</label><input type="date" class="fc" id="dDate"></div><div class="fg"><label class="fg-label">Heure</label><input type="time" class="fc" id="dHeure"></div></div><div class="fg"><label class="fg-label">Lieu</label><input type="text" class="fc" id="dLieu"></div><div class="fg"><label class="fg-label">Description</label><input type="text" class="fc" id="dDesc"></div><div class="g2"><div class="fg"><label class="fg-label">Catégorie</label><input type="text" class="fc" id="dCat"></div><div class="fg"><label class="fg-label">Montant ($)</label><input type="number" class="fc fc-num" id="dMontant" step="0.01"></div></div><div class="fg"><label class="fg-label">Note</label><textarea class="fc" id="dNote" rows="2"></textarea></div></div><div class="modal-ftr"><button class="btn btn-ghost" onclick="closeModal('mDep')">Annuler</button><button class="btn btn-primary" onclick="saveDep()">Enregistrer</button></div></div></div>
-
+<div class="modal-bg" id="mDep"><div class="modal"><div class="modal-hdr"><div class="modal-title" id="mDepTitle">Nouvelle dépense</div><button class="btn btn-ghost btn-icon btn-sm" style="margin-left:auto" onclick="closeModal('mDep')">✕</button></div><div class="modal-body"><div class="g2"><div class="fg"><label class="fg-label">Date</label><input type="date" class="fc" id="dDate"></div><div class="fg"><label class="fg-label">Heure</label><input type="time" class="fc" id="dHeure"></div></div><div class="fg"><label class="fg-label">Lieu / Endroit</label><div class="ac-wrap"><input type="text" class="fc" id="dLieu" placeholder="IGA, Shell, Tim Hortons…" autocomplete="off" oninput="ac(this,'acLieu','lieux')" onfocus="ac(this,'acLieu','lieux')"><div class="ac-list" id="acLieu"></div></div></div><div class="fg"><label class="fg-label">Article / Description</label><input type="text" class="fc" id="dDesc" placeholder="Épicerie semaine, Plein d'essence…"></div><div class="g2"><div class="fg"><label class="fg-label">Catégorie</label><div class="ac-wrap"><input type="text" class="fc" id="dCat" placeholder="Épicerie, Carburant…" autocomplete="off" oninput="ac(this,'acCat','categories')" onfocus="ac(this,'acCat','categories')"><div class="ac-list" id="acCat"></div></div></div><div class="fg"><label class="fg-label">Montant ($ CAD)</label><input type="number" class="fc fc-num" id="dMontant" step="0.01" min="0" placeholder="0,00"></div></div><div class="fg"><label class="fg-label">Type de dépense</label><div class="type-btns"><button class="type-btn active" data-type="Fixe" onclick="selType(this)">Fixe</button><button class="type-btn" data-type="Variable" onclick="selType(this)">Variable</button><button class="type-btn" data-type="Occasionnel" onclick="selType(this)">Occasionnel</button><button class="type-btn" data-type="Épargne" onclick="selType(this)">Épargne</button><button class="type-btn" data-type="Non-dépensé" onclick="selType(this)">Non-dépensé</button></div><input type="hidden" id="dType" value="Fixe"></div><div class="fg"><label class="fg-label">Note</label><textarea class="fc" id="dNote" rows="2" placeholder="Commentaire…"></textarea></div></div><div class="modal-ftr"><button class="btn btn-ghost" onclick="closeModal('mDep')">Annuler</button><button class="btn btn-primary" onclick="saveDep()">Enregistrer</button></div></div></div>
 <div class="modal-bg" id="mRevenuExtra"><div class="modal" style="max-width:400px"><div class="modal-hdr"><div class="modal-title">Revenu supp.</div><button class="btn btn-ghost btn-icon btn-sm" style="margin-left:auto" onclick="closeModal('mRevenuExtra')">✕</button></div><div class="modal-body"><div class="fg"><label class="fg-label">Source</label><input type="text" class="fc" id="reNom"></div><div class="g2"><div class="fg"><label class="fg-label">Montant ($)</label><input type="number" class="fc fc-num" id="reMontant"></div><div class="fg"><label class="fg-label">Fréquence</label><select class="fc" id="reFrequence"><option>Mensuel</option><option>Trimestriel</option><option>Annuel</option></select></div></div></div><div class="modal-ftr"><button class="btn btn-ghost" onclick="closeModal('mRevenuExtra')">Annuler</button><button class="btn btn-primary" onclick="saveRevenuExtra()">Ajouter</button></div></div></div>
 
 <div class="modal-bg" id="mSalaireReel"><div class="modal" style="max-width:400px"><div class="modal-hdr"><div class="modal-title">Salaire réel</div><button class="btn btn-ghost btn-icon btn-sm" style="margin-left:auto" onclick="closeModal('mSalaireReel')">✕</button></div><div class="modal-body"><div class="fg"><label class="fg-label">Date</label><input type="date" class="fc" id="srDate"></div><div class="fg"><label class="fg-label">Heure</label><input type="time" class="fc" id="srHeure"></div><div class="fg"><label class="fg-label">Montant ($)</label><input type="number" class="fc fc-num" id="srMontant" step="0.01"></div><div class="fg"><label class="fg-label">Note</label><input type="text" class="fc" id="srNote"></div></div><div class="modal-ftr"><button class="btn btn-ghost" onclick="closeModal('mSalaireReel')">Annuler</button><button class="btn btn-primary" onclick="saveSalaireReel()">Ajouter</button></div></div></div>
@@ -320,15 +330,58 @@ function autoCalcNonDepense() { const n = new Date(), y = n.getFullYear(), m = n
 function autoCat(lieu, desc) { const t = (lieu+' '+desc).toLowerCase(); for (const [cat, kws] of Object.entries(KW)) { if (kws.some(kw => t.includes(kw))) return cat; } return 'Autre'; }
 
 const PT = {dashboard:'Dashboard',depenses:'Dépenses',calendrier:'Calendrier',scanner:'Scanner',budget:'Budget',graphiques:'Graphiques',comparaison:'Comparaison',revenus:'Revenus',categories:'Catégories',guichets:'Guichets ATM',sync:'Synchroniser',params:'Paramètres',legal:'Mentions légales'};
-function nav(p) { document.querySelectorAll('.page').forEach(x => x.classList.remove('active')); document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active')); const pg = document.getElementById('page-'+p); if (pg) pg.classList.add('active'); const ni = document.querySelector(`[data-p="${p}"]`); if (ni) ni.classList.add('active'); document.getElementById('topbarTitle').textContent = PT[p] || p; closeSidebar(); if (p==='dashboard') renderDashboard(); if (p==='depenses') renderDeps(); if (p==='calendrier') renderCal(); if (p==='budget') renderBudget(); if (p==='graphiques') renderGraphiques(); if (p==='comparaison') renderComparaison(); if (p==='revenus') renderRevenus(); if (p==='categories') renderCategories(); if (p==='guichets') initMap(); if (p==='sync') stopScanner(); if (p==='params') renderParams(); }
+function nav(p) { document.querySelectorAll('.page').forEach(x => x.classList.remove('active')); document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active')); const pg = document.getElementById('page-'+p); if (pg) pg.classList.add('active'); const ni = document.querySelector(`[data-p="${p}"]`); if (ni) ni.classList.add('active'); document.getElementById('topbarTitle').textContent = PT[p] || p; closeSidebar(); if (p==='dashboard') renderDashboard(); if (p==='depenses') renderDeps(); if (p==='calendrier') renderCal(); if (p==='budget') renderBudget(); if (p==='graphiques') { populateFiltreMoisGraph(); renderGraphiques(); }; if (p==='comparaison') renderComparaison(); if (p==='revenus') renderRevenus(); if (p==='categories') renderCategories(); if (p==='guichets') initMap(); if (p==='sync') stopScanner(); if (p==='params') renderParams(); }
 function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sidebarOverlay').classList.toggle('open'); }
 function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebarOverlay').classList.remove('open'); }
 
-function openModal(id, opts={}) { document.getElementById(id).classList.add('open'); if (id==='mDep') { document.getElementById('dDate').value=opts.date||TN(); document.getElementById('dHeure').value=opts.heure||TM(); document.getElementById('dLieu').value=opts.lieu||''; document.getElementById('dDesc').value=opts.desc||''; document.getElementById('dCat').value=opts.cat||''; document.getElementById('dMontant').value=opts.montant||''; document.getElementById('dNote').value=opts.note||''; S._editId=opts.id||null; document.getElementById('mDepTitle').textContent=opts.id?'Modifier':'Nouvelle dépense'; } if (id==='mBudget') renderBudgetModal(); if (id==='mRevenuExtra') { document.getElementById('reNom').value=''; document.getElementById('reMontant').value=''; S._editRevenuIndex=null; } if (id==='mSalaireReel') { document.getElementById('srDate').value=TN(); document.getElementById('srHeure').value=''; document.getElementById('srMontant').value=''; document.getElementById('srNote').value=''; } }
+function openModal(id, opts={}) { document.getElementById(id).classList.add('open'); if (id==='mDep') { document.getElementById('dDate').value=opts.date||TN(); document.getElementById('dHeure').value=opts.heure||TM(); document.getElementById('dLieu').value=opts.lieu||''; document.getElementById('dDesc').value=opts.desc||''; document.getElementById('dCat').value=opts.cat||''; document.getElementById('dMontant').value=opts.montant||''; document.getElementById('dNote').value=opts.note||''; selTypeVal(opts.type||'Fixe'); S._editId=opts.id||null; document.getElementById('mDepTitle').textContent=opts.id?'Modifier':'Nouvelle dépense'; }}
+// ⬇️ AJOUTE CES 5 FONCTIONS ICI ⬇️
+
+function ac(inp, lid, key) {
+  var q = inp.value.toLowerCase().trim();
+  var list = document.getElementById(lid);
+  var items = [];
+  if (key === 'lieux') {
+    items = S.lieux.map(function(l) { return {v: l.nom, sub: l.cat, icon: l.icon || '📍'}; });
+  } else if (key === 'categories') {
+    items = S.categories.map(function(c) { return {v: c, icon: CI[c] || '🏷️'}; });
+  }
+  var f = q ? items.filter(function(i) { return i.v.toLowerCase().includes(q); }) : items.slice(0, 8);
+  if (!f.length) { list.classList.remove('open'); return; }
+  list.innerHTML = f.map(function(i) {
+    return '<div class="ac-item" onclick="acSel(\'' + inp.id + '\',\'' + lid + '\',\'' + i.v.replace(/'/g, "\\'") + '\',\'' + (i.sub || '').replace(/'/g, "\\'") + '\')"><span>' + (i.icon || '') + ' ' + i.v + '</span>' + (i.sub ? '<span class="ac-sub">' + i.sub + '</span>' : '') + '</div>';
+  }).join('');
+  list.classList.add('open');
+}
+
+function acSel(iid, lid, val, cat) {
+  document.getElementById(iid).value = val;
+  document.getElementById(lid).classList.remove('open');
+  if (iid === 'dLieu' && cat) document.getElementById('dCat').value = cat;
+}
+
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.ac-wrap')) {
+    document.querySelectorAll('.ac-list').forEach(function(l) { l.classList.remove('open'); });
+  }
+});
+
+function selType(el) {
+  document.querySelectorAll('.type-btn').forEach(function(b) { b.classList.remove('active'); });
+  el.classList.add('active');
+  document.getElementById('dType').value = el.dataset.type;
+}
+
+function selTypeVal(v) {
+  document.querySelectorAll('.type-btn').forEach(function(b) { b.classList.toggle('active', b.dataset.type === v); });
+  document.getElementById('dType').value = v;
+}
+
+// ⬆️ FIN DE L'AJOUT ⬆️
+
 function closeModal(id) { document.getElementById(id).classList.remove('open'); S._editId=null; }
 
-function saveDep() { const date=document.getElementById('dDate').value, heure=document.getElementById('dHeure').value, lieu=document.getElementById('dLieu').value.trim(), desc=document.getElementById('dDesc').value.trim(); let cat=document.getElementById('dCat').value.trim(); const montant=parseFloat(document.getElementById('dMontant').value), note=document.getElementById('dNote').value.trim(); if (!date||isNaN(montant)||montant<0) { toast('Données invalides','error'); return; } if (!cat&&(lieu||desc)) cat=autoCat(lieu, desc); if (!cat) cat='Autre'; if (lieu&&!S.lieux.find(l=>l.nom.toLowerCase()===lieu.toLowerCase())) S.lieux.push({nom:lieu, cat, icon:CI[cat]||'📍'}); if (!S.categories.includes(cat)) { S.categories.push(cat); S.budgets[cat]=0; } const entry={id:S._editId||Date.now(), date, heure, lieu, desc, cat, montant, type:'Variable', note, createdAt:new Date().toISOString()}; if (S._editId) { const i=S.depenses.findIndex(d=>d.id===S._editId); if (i>=0) S.depenses[i]=entry; else S.depenses.push(entry); toast('Modifié ✓','success'); } else { S.depenses.push(entry); toast(`${F(montant)} → ${cat}`,'success'); } autoCalcNonDepense(); persist(); closeModal('mDep'); renderDashboard(); checkAlertes(); }
-function delDep(id) { if (!confirm('Supprimer ?')) return; S.depenses = S.depenses.filter(d => d.id!==id); autoCalcNonDepense(); persist(); renderDashboard(); renderDeps(); toast('Supprimé','info'); }
+function saveDep() { const date=document.getElementById('dDate').value, heure=document.getElementById('dHeure').value, lieu=document.getElementById('dLieu').value.trim(), desc=document.getElementById('dDesc').value.trim(); let cat=document.getElementById('dCat').value.trim(); const montant=parseFloat(document.getElementById('dMontant').value), type=document.getElementById('dType').value, note=document.getElementById('dNote').value.trim(); if (!date||isNaN(montant)||montant<0) { toast('Données invalides','error'); return; } if (!cat&&(lieu||desc)) cat=autoCat(lieu, desc); if (!cat) cat='Autre'; if (lieu&&!S.lieux.find(l=>l.nom.toLowerCase()===lieu.toLowerCase())) S.lieux.push({nom:lieu, cat, icon:CI[cat]||'📍'}); if (!S.categories.includes(cat)) { S.categories.push(cat); S.budgets[cat]=0; } const entry={id:S._editId||Date.now(), date, heure, lieu, desc, cat, montant, type, note, createdAt:new Date().toISOString()}; if (S._editId) { const i=S.depenses.findIndex(d=>d.id===S._editId); if (i>=0) S.depenses[i]=entry; else S.depenses.push(entry); toast('Modifié ✓','success'); } else { S.depenses.push(entry); toast(`${F(montant)} → ${cat}`,'success'); } autoCalcNonDepense(); persist(); closeModal('mDep'); renderDashboard(); checkAlertes(); }function delDep(id) { if (!confirm('Supprimer ?')) return; S.depenses = S.depenses.filter(d => d.id!==id); autoCalcNonDepense(); persist(); renderDashboard(); renderDeps(); toast('Supprimé','info'); }
 function editDep(id) { const d = S.depenses.find(x => x.id===id); if (d) openModal('mDep', {...d}); }
 
 function renderDashboard() { const n=new Date(), y=n.getFullYear(), m=n.getMonth(); const sM=salM(), depM=depsM(y,m), epM=epargneM(y,m), nonD=nonDepenseM(y,m), solde=sM-depM-nonD; document.getElementById('kpiGrid').innerHTML = [{l:'Revenus',v:sM,c:'var(--a-green)',glow:'rgba(0,230,153,0.05)'},{l:'Dépenses',v:depM,c:'var(--a-blue)',glow:'rgba(77,143,255,0.05)'},{l:'Solde',v:solde,c:solde>=0?'var(--a-teal)':'var(--a-red)',glow:'rgba(45,212,191,0.05)'},{l:'Épargne',v:epM,c:'var(--a-purple)',glow:'rgba(167,139,250,0.05)'},{l:'Non-dépensé',v:nonD,c:'var(--a-amber)',glow:'rgba(255,192,64,0.05)'}].map(k => `<div class="kpi" style="--kpi-glow:${k.glow}"><div class="kpi-label">${k.l}</div><div class="kpi-val" style="color:${k.c}">${F(k.v)}</div></div>`).join(''); document.getElementById('sbSal').textContent = F(salMoyenReel()); document.getElementById('sbSalSub').textContent = `min ${F(salMinReel())} · max ${F(salMaxReel())}`; checkAlertes(); renderChartBar(); renderChartDough(); renderTableRecap(); renderLastDeps(); }
@@ -342,7 +395,8 @@ function renderChartBar() { destroyC('bar'); const n=new Date(),y=n.getFullYear(
 function renderChartDough() { destroyC('dough'); const n=new Date(),y=n.getFullYear(),m=n.getMonth();const l=[],d=[],c=[];S.categories.forEach(cat=>{const v=catM(cat,y,m);if(v>0){l.push(cat);d.push(v);c.push(CC[cat]||'#666');}});const ctx=document.getElementById('chartDough');if(ctx&&l.length)S._charts['dough']=new Chart(ctx,{type:'doughnut',data:{labels:l,datasets:[{data:d,backgroundColor:c,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'65%'}}); }
 
 function renderGraphiques() {
-  const n = new Date(), y = n.getFullYear(), m = n.getMonth();
+  var gm = getGraphMonth();
+var y = gm.y, m = gm.m;
   const catData = [];
   S.categories.forEach(function(cat) {
     var v = catM(cat, y, m);
@@ -551,6 +605,99 @@ let atmMap=null;
 function initMap() { if(atmMap)return;atmMap=L.map('atm-map').setView([46.8,-71.2],12);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OSM'}).addTo(atmMap); }
 function locateATM() { if(!navigator.geolocation){toast('Géolocalisation non disponible','error');return;}navigator.geolocation.getCurrentPosition(async pos=>{const{latitude:lat,longitude:lon}=pos.coords;const radius=parseInt(document.getElementById('atmRadius').value)||1000;if(!atmMap){atmMap=L.map('atm-map').setView([lat,lon],14);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(atmMap);}atmMap.setView([lat,lon],14);atmMap.eachLayer(l=>{if(l instanceof L.Marker)atmMap.removeLayer(l);});L.marker([lat,lon]).addTo(atmMap).bindPopup('📍 Vous êtes ici');try{const r=await fetch(`https://overpass-api.de/api/interpreter?data=[out:json];node["amenity"="atm"](around:${radius},${lat},${lon});out;`);const j=await r.json();document.getElementById('atmCount').textContent=j.elements.length;const el=document.getElementById('atmList');if(!j.elements.length){el.innerHTML='<p style="padding:14px;color:var(--t3)">Aucun guichet</p>';return;}j.elements.forEach(n=>L.marker([n.lat,n.lon]).addTo(atmMap).bindPopup(n.tags?.name||'ATM'));el.innerHTML=j.elements.map(n=>`<div class="atm-item" onclick="atmMap.setView([${n.lat},${n.lon}],17)"><span>🏧</span><div style="flex:1"><b>${n.tags?.name||'Guichet'}</b></div></div>`).join('');}catch(e){toast('Erreur API','error');}},()=>toast('Géolocalisation refusée','error')); }
 
+function populateFiltreMoisGraph() { var ms=document.getElementById('fMoisGraph');if(!ms)return;var keys=[];S.depenses.forEach(function(d){var k=MK(d.date);if(keys.indexOf(k)===-1)keys.push(k);});keys.sort().reverse();var cur=ms.value||MK(TN());ms.innerHTML=keys.map(function(k){var p=k.split('-');var sel=k===cur?' selected':'';return'<option value="'+k+'"'+sel+'>'+M[parseInt(p[1])-1]+' '+p[0]+'</option>';}).join('');if(!ms.value&&keys.length>0)ms.value=keys[0]; }
+function switchGraphTab(id) { document.querySelectorAll('#page-graphiques .tab-panel').forEach(function(p){p.classList.remove('active');});var el=document.getElementById(id);if(el)el.classList.add('active');document.querySelectorAll('#page-graphiques .tab').forEach(function(t){t.classList.remove('active');});var btn=document.querySelector('#page-graphiques .tab[onclick*="'+id+'"]');if(btn)btn.classList.add('active');if(id==='graphSalaires')renderGraphSalaires(); }
+function getGraphMonth() { var ms=document.getElementById('fMoisGraph');if(ms&&ms.value){var p=ms.value.split('-');return{y:parseInt(p[0]),m:parseInt(p[1])-1};}var n=new Date();return{y:n.getFullYear(),m:n.getMonth()}; }
+function renderGraphSalaires() {
+  var reels = S.salaire.salairesReels || [];
+  
+  destroyC('salairesReels');
+  var ctxS = document.getElementById('chartSalairesReels');
+  if (ctxS && reels.length > 0) {
+    var triees = reels.slice().sort(function(a, b) { return new Date(a.date) - new Date(b.date); });
+    S._charts['salairesReels'] = new Chart(ctxS, {
+      type: 'bar',
+      data: {
+        labels: triees.map(function(s) { return s.date; }),
+        datasets: [{
+          label: 'Salaire reçu',
+          data: triees.map(function(s) { return s.montant; }),
+          backgroundColor: triees.map(function(_, i) { return i % 2 === 0 ? '#4DB6AC' : '#5B8DEF'; }),
+          borderRadius: 8,
+          borderSkipped: false
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: function(c) { return F(c.parsed.y); } } }
+        },
+        scales: {
+          x: { grid: { display: false } },
+          y: {
+            grid: { color: 'rgba(255,255,255,0.04)' },
+            ticks: { callback: function(v) { return F(v); } }
+          }
+        }
+      }
+    });
+  }
+  
+  destroyC('cumulSalaires');
+  var ctxC = document.getElementById('chartCumulSalaires');
+  if (ctxC) {
+    var estime = (S.salaire.netM || 0) * 4.33;
+    var debut = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+    var moisReels = reels.filter(function(s) { return new Date(s.date) >= debut; });
+    var cumul = moisReels.reduce(function(a, s) { return a + s.montant; }, 0);
+    S._charts['cumulSalaires'] = new Chart(ctxC, {
+      type: 'bar',
+      data: {
+        labels: ['Ce mois'],
+        datasets: [
+          {
+            label: 'Reçu',
+            data: [cumul],
+            backgroundColor: '#4DB6AC',
+            borderRadius: 8,
+            borderSkipped: false
+          },
+          {
+            label: 'Estimé',
+            data: [estime],
+            backgroundColor: 'transparent',
+            borderColor: '#FFC040',
+            borderWidth: 2,
+            borderDash: [5, 5],
+            type: 'line',
+            pointRadius: 6,
+            pointBackgroundColor: '#FFC040'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { usePointStyle: true, pointStyle: 'circle', padding: 16, color: 'var(--t2)' }
+          },
+          tooltip: { callbacks: { label: function(c) { return c.dataset.label + ': ' + F(c.parsed.y); } } }
+        },
+        scales: {
+          x: { grid: { display: false } },
+          y: {
+            grid: { color: 'rgba(255,255,255,0.04)' },
+            ticks: { callback: function(v) { return F(v); } }
+          }
+        }
+      }
+    });
+  }
+}
 function switchSyncTab(id) { document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));document.getElementById(id)?.classList.add('active');document.querySelectorAll('#page-sync .tab').forEach(t=>t.classList.remove('active'));if(id!=='syncQR')stopScanner(); }
 function genererQRCode() { const c=document.getElementById('qrContainer');if(!c)return;c.innerHTML='<p style="padding:20px">⏳ Génération...</p>';const data={d:S.depenses.slice(-150).map(d=>({dt:d.date,l:d.lieu||'',c:d.cat||'',m:d.montant})),ct:S.categories,b:S.budgets,sl:S.salaire,pr:S.params};const json=JSON.stringify(data);if(json.length>2500){c.innerHTML='<p style="color:var(--a-amber);padding:20px;text-align:center">⚠️ Trop volumineux<br><button class="btn btn-primary btn-sm" onclick="copierDonnees()">📋 Copier</button></p>';return;}c.innerHTML='';try{new QRCode(c,{text:json,width:280,height:280,colorDark:'#0A1024',colorLight:'#FFFFFF',correctLevel:QRCode.CorrectLevel.L});toast('✅ QR Code généré !','success');}catch(e){c.innerHTML='<p style="color:var(--a-red);padding:20px">Erreur</p>';} }
 function copierDonnees() { const data={d:S.depenses.map(d=>({dt:d.date,l:d.lieu||'',c:d.cat||'',m:d.montant})),ct:S.categories,b:S.budgets,sl:S.salaire,pr:S.params};const text=JSON.stringify(data);navigator.clipboard?.writeText(text).then(()=>toast('✅ Copié !','success')).catch(()=>{const ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);toast('✅ Copié !','success');}); }
