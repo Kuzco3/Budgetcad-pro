@@ -343,13 +343,175 @@ function renderChartDough() { destroyC('dough'); const n=new Date(),y=n.getFullY
 
 function renderGraphiques() {
   const n = new Date(), y = n.getFullYear(), m = n.getMonth();
-  const catData = []; S.categories.forEach(cat => { const v = catM(cat, y, m); if (v > 0) catData.push({ cat, value: v, color: CC[cat] || '#888', icon: CI[cat] || '📌', budget: S.budgets[cat] || 0 }); }); catData.sort((a, b) => b.value - a.value);
-  destroyC('multiRing'); const ctxR = document.getElementById('chartMultiRing');
-  if (ctxR && catData.length) { const total = catData.reduce((a, c) => a + c.value, 0); S._charts['multiRing'] = new Chart(ctxR, { type: 'doughnut', data: { labels: catData.map(c => c.cat), datasets: [{ data: catData.map(c => c.value), backgroundColor: catData.map(c => c.color), borderColor: 'var(--s1)', borderWidth: 3, hoverOffset: 8 }] }, options: { responsive: true, maintainAspectRatio: true, cutout: '50%', plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(c) { return ' ' + c.label + ': ' + F(c.parsed) + ' (' + P(c.parsed/total*100) + ')'; } } } } }); const leg = document.getElementById('legendMultiRing'); leg.innerHTML = '<div style="font-size:10px;color:var(--t3);margin-bottom:8px">LÉGENDE</div>' + catData.map((c, i) => `<div style="display:flex;align-items:center;gap:10px;padding:6px 0;font-size:12px"><span style="width:10px;height:10px;border-radius:3px;background:${c.color};flex-shrink:0"></span><span style="flex:1;color:var(--t2)">${c.icon} ${c.cat}</span><span class="mono" style="color:var(--t1)">${F(c.value)}</span><span style="font-size:10px;color:${c.color};font-weight:600">${P(c.value/total*100)}</span></div>`).join(''); }
-  destroyC('barH'); const ctxB = document.getElementById('chartBarH');
-  if (ctxB && catData.length) { S._charts['barH'] = new Chart(ctxB, { type: 'bar', data: { labels: catData.map(c => c.cat), datasets: [{ label: 'Dépensé', data: catData.map(c => c.value), backgroundColor: catData.map(c => c.color+'CC'), borderRadius: 6, borderSkipped: false }, { label: 'Budget', data: catData.map(c => c.budget), backgroundColor: 'transparent', borderColor: catData.map(c => c.color), borderWidth: 2, borderDash: [6,4], type: 'line', pointRadius: 0 }] }, options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, pointStyle: 'circle', padding: 16, color: 'var(--t2)', font: { size: 11 } } }, tooltip: { callbacks: { label: function(c) { return c.dataset.label + ': ' + F(c.parsed.x); } } } }, scales: { x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { callback: function(v) { return F(v); } } }, y: { grid: { display: false } } } }); }
-  destroyC('evo'); const ctxE = document.getElementById('chartEvo');
-  if (ctxE) { const moisLabels = [], moisDep = [], moisRev = []; for (let i = 0; i <= m; i++) { moisLabels.push(M[i].slice(0,4)); moisDep.push(depsM(y, i)); moisRev.push(salM()); } S._charts['evo'] = new Chart(ctxE, { type: 'line', data: { labels: moisLabels, datasets: [{ label: 'Dépenses', data: moisDep, borderColor: '#E05555', backgroundColor: '#E0555518', fill: true, tension: 0.4, pointRadius: 4, borderWidth: 2 }, { label: 'Revenus', data: moisRev, borderColor: '#4DB6AC', backgroundColor: '#4DB6AC18', fill: true, tension: 0.4, pointRadius: 4, borderWidth: 2 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, pointStyle: 'circle', padding: 20, color: 'var(--t2)', font: { size: 11 } } }, tooltip: { callbacks: { label: function(c) { return c.dataset.label + ': ' + F(c.parsed.y); } } } }, scales: { x: { grid: { display: false } }, y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { callback: function(v) { return F(v); } } } } }); }
+  const catData = [];
+  S.categories.forEach(function(cat) {
+    var v = catM(cat, y, m);
+    if (v > 0) catData.push({ cat: cat, value: v, color: CC[cat] || '#888', icon: CI[cat] || '📌', budget: S.budgets[cat] || 0 });
+  });
+  catData.sort(function(a, b) { return b.value - a.value; });
+
+  destroyC('multiRing');
+  var ctxR = document.getElementById('chartMultiRing');
+  if (ctxR && catData.length) {
+    var total = catData.reduce(function(a, c) { return a + c.value; }, 0);
+    S._charts['multiRing'] = new Chart(ctxR, {
+      type: 'doughnut',
+      data: {
+        labels: catData.map(function(c) { return c.cat; }),
+        datasets: [{
+          data: catData.map(function(c) { return c.value; }),
+          backgroundColor: catData.map(function(c) { return c.color; }),
+          borderColor: 'var(--s1)',
+          borderWidth: 3,
+          hoverOffset: 8
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        cutout: '50%',
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return ' ' + context.label + ': ' + F(context.parsed) + ' (' + P(context.parsed / total * 100) + ')';
+              }
+            }
+          }
+        }
+      }
+    });
+    var leg = document.getElementById('legendMultiRing');
+    var legendHtml = '<div style="font-size:10px;color:var(--t3);margin-bottom:8px">LÉGENDE</div>';
+    catData.forEach(function(c, i) {
+      legendHtml += '<div style="display:flex;align-items:center;gap:10px;padding:6px 0;font-size:12px">' +
+        '<span style="width:10px;height:10px;border-radius:3px;background:' + c.color + ';flex-shrink:0"></span>' +
+        '<span style="flex:1;color:var(--t2)">' + c.icon + ' ' + c.cat + '</span>' +
+        '<span class="mono" style="color:var(--t1)">' + F(c.value) + '</span>' +
+        '<span style="font-size:10px;color:' + c.color + ';font-weight:600">' + P(c.value / total * 100) + '</span>' +
+        '</div>';
+    });
+    leg.innerHTML = legendHtml;
+  }
+
+  destroyC('barH');
+  var ctxB = document.getElementById('chartBarH');
+  if (ctxB && catData.length) {
+    S._charts['barH'] = new Chart(ctxB, {
+      type: 'bar',
+      data: {
+        labels: catData.map(function(c) { return c.cat; }),
+        datasets: [
+          {
+            label: 'Dépensé',
+            data: catData.map(function(c) { return c.value; }),
+            backgroundColor: catData.map(function(c) { return c.color + 'CC'; }),
+            borderRadius: 6,
+            borderSkipped: false
+          },
+          {
+            label: 'Budget',
+            data: catData.map(function(c) { return c.budget; }),
+            backgroundColor: 'transparent',
+            borderColor: catData.map(function(c) { return c.color; }),
+            borderWidth: 2,
+            borderDash: [6, 4],
+            type: 'line',
+            pointRadius: 0
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        indexAxis: 'y',
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { usePointStyle: true, pointStyle: 'circle', padding: 16, color: 'var(--t2)', font: { size: 11 } }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return context.dataset.label + ': ' + F(context.parsed.x);
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: { color: 'rgba(255,255,255,0.04)' },
+            ticks: { callback: function(v) { return F(v); } }
+          },
+          y: { grid: { display: false } }
+        }
+      }
+    });
+  }
+
+  destroyC('evo');
+  var ctxE = document.getElementById('chartEvo');
+  if (ctxE) {
+    var moisLabels = [], moisDep = [], moisRev = [];
+    for (var i = 0; i <= m; i++) {
+      moisLabels.push(M[i].slice(0, 4));
+      moisDep.push(depsM(y, i));
+      moisRev.push(salM());
+    }
+    S._charts['evo'] = new Chart(ctxE, {
+      type: 'line',
+      data: {
+        labels: moisLabels,
+        datasets: [
+          {
+            label: 'Dépenses',
+            data: moisDep,
+            borderColor: '#E05555',
+            backgroundColor: '#E0555518',
+            fill: true,
+            tension: 0.4,
+            pointRadius: 4,
+            borderWidth: 2
+          },
+          {
+            label: 'Revenus',
+            data: moisRev,
+            borderColor: '#4DB6AC',
+            backgroundColor: '#4DB6AC18',
+            fill: true,
+            tension: 0.4,
+            pointRadius: 4,
+            borderWidth: 2
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { usePointStyle: true, pointStyle: 'circle', padding: 20, color: 'var(--t2)', font: { size: 11 } }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return context.dataset.label + ': ' + F(context.parsed.y);
+              }
+            }
+          }
+        },
+        scales: {
+          x: { grid: { display: false } },
+          y: {
+            grid: { color: 'rgba(255,255,255,0.04)' },
+            ticks: { callback: function(v) { return F(v); } }
+          }
+        }
+      }
+    });
+  }
 }
 
 function renderComparaison() { const n=new Date(),y=n.getFullYear(),m=n.getMonth();const labels=[],depenses=[],revenus=[];for(let i=0;i<=m;i++){labels.push(M[i].slice(0,4));depenses.push(depsM(y,i));revenus.push(salM());}destroyC('comparaison');const ctx=document.getElementById('chartComparaison');if(ctx)S._charts['comparaison']=new Chart(ctx,{type:'bar',data:{labels,datasets:[{label:'Dépenses',data:depenses,backgroundColor:'#4D8FFFCC',borderRadius:6},{label:'Revenus',data:revenus,backgroundColor:'#00E699CC',borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false}});let html='';for(let i=0;i<=m;i++){const dep=depsM(y,i),rev=salM();let evol=0,tendance='—';if(i>0){const dp=depsM(y,i-1);evol=dp>0?((dep-dp)/dp*100):0;tendance=evol>5?'📈 Hausse':evol<-5?'📉 Baisse':'➡️ Stable';}html+=`<tr><td>${M[i]}</td><td class="mono">${F(rev)}</td><td class="mono">${F(dep)}</td><td class="mono">${i>0?(evol>0?'+':'')+evol.toFixed(1)+'%':'—'}</td><td>${tendance}</td></tr>`;}document.getElementById('tblComparaison').innerHTML=html; }
