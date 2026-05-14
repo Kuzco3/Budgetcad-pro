@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#050A18">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="BudgetCAD">
 <meta name="description" content="Gestionnaire financier personnel">
-<meta http-equiv="X-Frame-Options" content="DENY">
 <meta name="robots" content="noindex, nofollow">
 <link rel="manifest" href="manifest.json">
 <title>BudgetCAD</title>
@@ -185,6 +185,11 @@ tbody tr:hover{background:rgba(77,143,255,0.03)}
 .hamburger{display:none;flex-direction:column;gap:4.5px;padding:7px;border-radius:var(--r-sm);border:1px solid var(--b2);cursor:pointer}
 .hamburger span{width:18px;height:1.5px;background:var(--t2);border-radius:1px;display:block;transition:all .25s}
 .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:199}
+.legal-content{max-width:800px;margin:0 auto;line-height:1.8}
+.legal-content h2{font-size:16px;font-weight:700;color:var(--t1);margin-top:28px;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--b2)}
+.legal-content h3{font-size:13px;font-weight:600;color:var(--a-blue);margin-top:20px;margin-bottom:8px}
+.legal-content p,.legal-content li{font-size:13px;color:var(--t2);margin-bottom:10px}
+.legal-content ul{margin-left:20px;margin-bottom:12px}
 @media(max-width:900px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:none;box-shadow:20px 0 60px rgba(0,0,0,0.5)}.sidebar-overlay.open{display:block}.main{margin-left:0}.hamburger{display:flex}.g2,.g3{grid-template-columns:1fr}.content{padding:16px}.kpi-grid{grid-template-columns:repeat(2,1fr)}.topbar{padding:0 16px}}
 @media(max-width:480px){.kpi-grid{grid-template-columns:1fr 1fr}}
 </style>
@@ -243,7 +248,16 @@ tbody tr:hover{background:rgba(77,143,255,0.03)}
 
       <div id="page-budget" class="page"><div class="section-title">Budget & Suivi</div><div class="section-sub">Analyse détaillée par catégorie</div><div id="budgetAlertes" style="margin-bottom:16px"></div><div class="card"><div class="card-title">📋 Budgets vs Réel</div><div id="budgetList"></div><button class="btn btn-ghost btn-sm" onclick="openModal('mBudget')" style="margin-top:12px">⚙️ Modifier les budgets</button></div></div>
 
-      <div id="page-graphiques" class="page"><div class="section-title">Graphiques & Analyses</div><div class="g2" style="margin-bottom:18px"><div class="card"><div class="card-title">🥧 Répartition des dépenses</div><div style="display:flex;align-items:center;gap:20px"><div style="flex:1;max-width:280px"><canvas id="chartMultiRing"></canvas></div><div id="legendMultiRing" style="flex:1;min-width:180px"></div></div></div><div class="card"><div class="card-title">📊 Budgets vs Dépenses réelles</div><div style="height:300px"><canvas id="chartBarH"></canvas></div></div></div><div class="card"><div class="card-title">📈 Évolution mensuelle</div><div style="height:280px"><canvas id="chartEvo"></canvas></div></div></div>
+      <div id="page-graphiques" class="page"><div class="section-title">Graphiques & Analyses</div>
+        <div class="card" style="margin-bottom:14px;padding:14px"><div style="display:flex;align-items:center;gap:10px"><label class="fg-label" style="margin-bottom:0;white-space:nowrap">Mois :</label><select class="fc" id="fMoisGraph" onchange="renderGraphiques()" style="width:auto;min-width:180px"></select></div></div>
+        <div class="tabs"><button class="tab active" onclick="switchGraphTab('graphDepenses')">📊 Dépenses</button><button class="tab" onclick="switchGraphTab('graphSalaires')">💵 Salaires</button></div>
+        <div id="graphDepenses" class="tab-panel active">
+          <div class="g2" style="margin-bottom:18px"><div class="card"><div class="card-title">🥧 Répartition des dépenses</div><div style="display:flex;align-items:center;gap:20px"><div style="flex:1;max-width:280px"><canvas id="chartMultiRing"></canvas></div><div id="legendMultiRing" style="flex:1;min-width:180px"></div></div></div><div class="card"><div class="card-title">📊 Budgets vs Dépenses réelles</div><div style="height:300px"><canvas id="chartBarH"></canvas></div></div></div><div class="card"><div class="card-title">📈 Évolution mensuelle</div><div style="height:280px"><canvas id="chartEvo"></canvas></div></div>
+        </div>
+        <div id="graphSalaires" class="tab-panel">
+          <div class="g2" style="margin-bottom:18px"><div class="card"><div class="card-title">💵 Salaires réels par semaine</div><div style="height:300px"><canvas id="chartSalairesReels"></canvas></div></div><div class="card"><div class="card-title">📊 Cumul mensuel vs Estimé</div><div style="height:300px"><canvas id="chartCumulSalaires"></canvas></div></div></div>
+        </div>
+      </div>
 
       <div id="page-comparaison" class="page"><div class="section-title">📊 Comparaison mois/mois</div><div class="card" style="margin-bottom:16px"><div class="card-title">📈 Évolution</div><div style="height:280px"><canvas id="chartComparaison"></canvas></div></div><div class="card"><div class="card-title">📋 Détail</div><div class="tbl-wrap"><table><thead><tr><th>Mois</th><th>Revenus</th><th>Dépenses</th><th>vs préc.</th><th>Tendance</th></tr></thead><tbody id="tblComparaison"></tbody></table></div></div></div>
 
@@ -263,7 +277,33 @@ tbody tr:hover{background:rgba(77,143,255,0.03)}
         <button class="palette-btn" data-palette="onyx-minimal" onclick="changerPalette('onyx-minimal',this)" style="display:flex;align-items:center;width:100%;padding:12px 16px;border-radius:var(--r-md);font-size:13px;cursor:pointer;border:1px solid var(--b2);background:var(--s2);color:var(--t2);text-align:left"><span style="display:inline-block;width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,#A0A0A0,#606060);margin-right:8px"></span>Onyx Minimal</button>
       </div></div><div class="card"><div class="fg"><label class="fg-label">Seuil alerte (%)</label><input type="range" id="alertSeuil" min="50" max="100" value="85" class="fc" oninput="document.getElementById('alertSeuilV').textContent=this.value+'%'"><div style="text-align:center;color:var(--a-blue)" id="alertSeuilV">85%</div></div><button class="btn btn-primary btn-sm" onclick="saveParams()">Enregistrer</button><button class="btn btn-danger btn-sm" onclick="clearData()" style="margin-left:8px">Effacer données</button></div></div>
 
-      <div id="page-legal" class="page"><div class="section-title">📜 Mentions légales</div><div class="tabs"><button class="tab active" onclick="switchLegalTab('privacy')">🔒 Confidentialité</button><button class="tab" onclick="switchLegalTab('terms')">📋 Conditions</button></div><div id="privacy" class="tab-panel active"><div class="card"><p style="font-size:13px;color:var(--t2)">BudgetCAD ne collecte aucune donnée personnelle. Tout est stocké localement.</p></div></div><div id="terms" class="tab-panel"><div class="card"><p style="font-size:13px;color:var(--t2)">Application fournie "telle quelle" pour usage personnel.</p></div></div></div>
+      <div id="page-legal" class="page"><div class="section-title">📜 Mentions légales</div><div class="tabs"><button class="tab active" onclick="switchLegalTab('privacy')">🔒 Confidentialité</button><button class="tab" onclick="switchLegalTab('terms')">📋 Conditions</button><button class="tab" onclick="switchLegalTab('copyright')">© Copyright</button></div>
+        <div id="privacy" class="tab-panel active"><div class="card"><div class="legal-content">
+          <h2>🔒 Politique de confidentialité</h2><p style="color:var(--t3);font-style:italic">Dernière mise à jour : Mai 2026</p>
+          <h3>1. Collecte des données</h3><p>BudgetCAD ne collecte <strong>aucune donnée personnelle</strong>. Toutes les informations financières que vous saisissez (dépenses, revenus, budgets, catégories) sont stockées <strong>exclusivement sur votre appareil</strong> dans le stockage local (localStorage) de votre navigateur. Aucune donnée n'est transmise à un serveur externe.</p>
+          <h3>2. Utilisation des données</h3><p>Vos données sont utilisées <strong>uniquement</strong> pour afficher vos tableaux de bord, calculer vos soldes et générer des graphiques. Aucun traitement automatisé ni profilage n'est effectué.</p>
+          <h3>3. Partage des données</h3><p>BudgetCAD ne partage, ne vend et ne transmet <strong>aucune donnée</strong> à des tiers. La synchronisation entre appareils se fait via QR code ou export de fichier JSON — vous gardez le contrôle total.</p>
+          <h3>4. Sécurité</h3><ul><li>Données stockées localement dans votre navigateur</li><li>Aucune connexion Internet requise pour le fonctionnement</li><li>Effacement possible à tout moment depuis Paramètres</li></ul>
+          <h3>5. Vos droits (conformément à la LPRPDE)</h3><p>Conformément à la <em>Loi sur la protection des renseignements personnels et les documents électroniques</em> (LPRPDE) du Canada, vous avez le droit d'accéder à vos données, de les exporter et de les supprimer à tout moment.</p>
+          <h3>6. Témoins (cookies)</h3><p>BudgetCAD n'utilise <strong>aucun témoin de connexion</strong>. Les bibliothèques tierces (Chart.js, Tesseract.js, Leaflet) sont open source et ne collectent pas de données utilisateur.</p>
+          <h3>7. Contact</h3><p>Pour toute question : contact@budgetcad.app</p>
+        </div></div></div>
+        <div id="terms" class="tab-panel"><div class="card"><div class="legal-content">
+          <h2>📋 Conditions d'utilisation</h2><p style="color:var(--t3);font-style:italic">Dernière mise à jour : Mai 2026</p>
+          <h3>1. Description du service</h3><p>BudgetCAD est un gestionnaire de finances personnelles fonctionnant dans votre navigateur, fourni « tel quel » sans garantie d'aucune sorte, expresse ou implicite.</p>
+          <h3>2. Utilisation acceptable</h3><ul><li>Usage personnel et non commercial uniquement</li><li>Ne pas contourner les mécanismes de sécurité</li><li>Ne pas utiliser à des fins illégales</li></ul>
+          <h3>3. Limitation de responsabilité</h3><p>BudgetCAD est un outil d'aide à la gestion financière. Il ne remplace pas les conseils d'un professionnel financier, comptable ou fiscaliste. En aucun cas les créateurs de BudgetCAD ne pourront être tenus responsables des décisions financières prises sur la base des informations affichées, ni des dommages directs ou indirects résultant de l'utilisation de l'application.</p>
+          <h3>4. Modification du service</h3><p>Les fonctionnalités peuvent être modifiées, mises à jour ou interrompues à tout moment sans préavis.</p>
+        </div></div></div>
+        <div id="copyright" class="tab-panel"><div class="card"><div class="legal-content">
+          <h2>© Droit d'auteur et propriété intellectuelle</h2><p style="color:var(--t3);font-style:italic">Conformément à la Loi sur le droit d'auteur du Canada (L.R.C. 1985, ch. C-42)</p>
+          <h3>1. Titularité</h3><p>Le code source, le design, l'interface utilisateur, le logo, les graphiques et l'ensemble du contenu original de BudgetCAD sont protégés par les lois canadiennes et internationales sur le droit d'auteur. Tous droits réservés © 2026 BudgetCAD.</p>
+          <h3>2. Licence d'utilisation</h3><p>L'utilisation de BudgetCAD est accordée à titre gratuit pour un usage personnel. Cette licence ne confère aucun droit de propriété intellectuelle. Vous n'êtes pas autorisé à :</p><ul><li>Copier, modifier ou distribuer le code source sans autorisation</li><li>Créer des œuvres dérivées à des fins commerciales</li><li>Retirer les mentions de droit d'auteur</li></ul>
+          <h3>3. Marques de commerce</h3><p>Les logos et noms d'entreprises (Canadian Tire, Walmart, Costco, etc.) sont des marques déposées de leurs propriétaires respectifs. Leur utilisation dans BudgetCAD est strictement indicative pour aider l'utilisateur à catégoriser ses dépenses.</p>
+          <h3>4. Violation</h3><p>Toute violation de ces droits de propriété intellectuelle peut entraîner des poursuites civiles et pénales conformément aux lois applicables.</p>
+          <h3>5. Contact</h3><p>Pour toute demande de licence ou autorisation : legal@budgetcad.app</p>
+        </div></div></div>
+      </div>
 
     </div>
   </main>
@@ -279,7 +319,7 @@ tbody tr:hover{background:rgba(77,143,255,0.03)}
 <div class="modal-bg" id="mBudget"><div class="modal"><div class="modal-hdr"><div class="modal-title">Budgets</div><button class="btn btn-ghost btn-icon btn-sm" style="margin-left:auto" onclick="closeModal('mBudget')">✕</button></div><div class="modal-body" id="mBudgetBody"></div><div class="modal-ftr"><button class="btn btn-ghost" onclick="closeModal('mBudget')">Annuler</button><button class="btn btn-primary" onclick="saveBudgets()">Enregistrer</button></div></div></div>
 
 <script>
-const V = '5.0.0';
+const V = '5.1.0';
 const M = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
 const CATS = ['Épicerie','Carburant','Loyer','Téléphone','Dettes/Prêts','Loisirs','Vêtements','Santé','Restaurant','Transport','Non-dépensé','Autre'];
 const CC = {'Épicerie':'#00E699','Carburant':'#FFC040','Loyer':'#4D8FFF','Téléphone':'#A78BFA','Dettes/Prêts':'#FF5C72','Loisirs':'#2DD4BF','Vêtements':'#FF9F43','Santé':'#2DD4BF','Restaurant':'#FF6B6B','Transport':'#A29BFE','Non-dépensé':'#8895B3','Autre':'#636E72'};
@@ -326,7 +366,7 @@ function autoCalcNonDepense() { const n = new Date(), y = n.getFullYear(), m = n
 function autoCat(lieu, desc) { const t = (lieu+' '+desc).toLowerCase(); for (const [cat, kws] of Object.entries(KW)) { if (kws.some(kw => t.includes(kw))) return cat; } return 'Autre'; }
 
 const PT = {dashboard:'Dashboard',depenses:'Dépenses',calendrier:'Calendrier',scanner:'Scanner',budget:'Budget',graphiques:'Graphiques',comparaison:'Comparaison',revenus:'Revenus',categories:'Catégories',guichets:'Guichets ATM',sync:'Synchroniser',params:'Paramètres',legal:'Mentions légales'};
-function nav(p) { document.querySelectorAll('.page').forEach(x => x.classList.remove('active')); document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active')); const pg = document.getElementById('page-'+p); if (pg) pg.classList.add('active'); const ni = document.querySelector(`[data-p="${p}"]`); if (ni) ni.classList.add('active'); document.getElementById('topbarTitle').textContent = PT[p] || p; closeSidebar(); if (p==='dashboard') renderDashboard(); if (p==='depenses') renderDeps(); if (p==='calendrier') renderCal(); if (p==='budget') renderBudget(); if (p==='graphiques') renderGraphiques(); if (p==='comparaison') renderComparaison(); if (p==='revenus') renderRevenus(); if (p==='categories') renderCategories(); if (p==='guichets') initMap(); if (p==='sync') stopScanner(); if (p==='params') renderParams(); }
+function nav(p) { document.querySelectorAll('.page').forEach(x => x.classList.remove('active')); document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active')); const pg = document.getElementById('page-'+p); if (pg) pg.classList.add('active'); const ni = document.querySelector(`[data-p="${p}"]`); if (ni) ni.classList.add('active'); document.getElementById('topbarTitle').textContent = PT[p] || p; closeSidebar(); if (p==='dashboard') renderDashboard(); if (p==='depenses') renderDeps(); if (p==='calendrier') renderCal(); if (p==='budget') renderBudget(); if (p==='graphiques') { populateFiltreMoisGraph(); renderGraphiques(); } if (p==='comparaison') renderComparaison(); if (p==='revenus') renderRevenus(); if (p==='categories') renderCategories(); if (p==='guichets') initMap(); if (p==='sync') stopScanner(); if (p==='params') renderParams(); }
 function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sidebarOverlay').classList.toggle('open'); }
 function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebarOverlay').classList.remove('open'); }
 
@@ -347,78 +387,77 @@ function destroyC(k) { if (S._charts[k]) { S._charts[k].destroy(); delete S._cha
 function renderChartBar() { destroyC('bar'); const n=new Date(),y=n.getFullYear();const l=[],d=[],r=[];for(let i=Math.max(0,n.getMonth()-5);i<=n.getMonth();i++){l.push(M[i].slice(0,4));d.push(depsM(y,i));r.push(salM());}const ctx=document.getElementById('chartBar');if(ctx)S._charts['bar']=new Chart(ctx,{type:'bar',data:{labels:l,datasets:[{label:'Dépenses',data:d,backgroundColor:'#4D8FFFCC',borderRadius:6},{label:'Revenus',data:r,backgroundColor:'#00E699CC',borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false}}); }
 function renderChartDough() { destroyC('dough'); const n=new Date(),y=n.getFullYear(),m=n.getMonth();const l=[],d=[],c=[];S.categories.forEach(cat=>{const v=catM(cat,y,m);if(v>0){l.push(cat);d.push(v);c.push(CC[cat]||'#666');}});const ctx=document.getElementById('chartDough');if(ctx&&l.length)S._charts['dough']=new Chart(ctx,{type:'doughnut',data:{labels:l,datasets:[{data:d,backgroundColor:c,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'65%'}}); }
 
+function populateFiltreMoisGraph() {
+  const ms = document.getElementById('fMoisGraph');
+  if (!ms) return;
+  const keys = [...new Set(S.depenses.map(d => MK(d.date)))].sort().reverse();
+  const cur = ms.value || MK(TN());
+  ms.innerHTML = keys.map(k => { const [y,m] = k.split('-'); return `<option value="${k}"${k===cur?' selected':''}>${M[parseInt(m)-1]} ${y}</option>`; }).join('');
+  if (!ms.value && keys.length > 0) ms.value = keys[0];
+}
+
+function switchGraphTab(id) {
+  document.querySelectorAll('#page-graphiques .tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById(id)?.classList.add('active');
+  document.querySelectorAll('#page-graphiques .tab').forEach(t => t.classList.remove('active'));
+  const btn = document.querySelector(`#page-graphiques .tab[onclick*="${id}"]`);
+  if (btn) btn.classList.add('active');
+  if (id === 'graphSalaires') renderGraphSalaires();
+}
+
+function getGraphMonth() {
+  const ms = document.getElementById('fMoisGraph');
+  if (ms && ms.value) {
+    const [y, m] = ms.value.split('-').map(Number);
+    return { y, m: m - 1 };
+  }
+  const n = new Date();
+  return { y: n.getFullYear(), m: n.getMonth() };
+}
+
 function renderGraphiques() {
-  const n = new Date(), y = n.getFullYear(), m = n.getMonth();
+  const { y, m } = getGraphMonth();
   const catData = [];
   S.categories.forEach(cat => { const v = catM(cat, y, m); if (v > 0) catData.push({ cat, value: v, color: CC[cat] || '#888', icon: CI[cat] || '📌', budget: S.budgets[cat] || 0 }); });
   catData.sort((a, b) => b.value - a.value);
   
-  // Anneau avec légende
   destroyC('multiRing');
   const ctxR = document.getElementById('chartMultiRing');
   if (ctxR && catData.length) {
     const total = catData.reduce((a, c) => a + c.value, 0);
-    S._charts['multiRing'] = new Chart(ctxR, {
-      type: 'doughnut',
-      data: {
-        labels: catData.map(c => c.cat),
-        datasets: [{ data: catData.map(c => c.value), backgroundColor: catData.map(c => c.color), borderColor: 'var(--s1)', borderWidth: 3, hoverOffset: 8 }]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: true, cutout: '50%',
-        plugins: {
-          legend: { display: false },
-          tooltip: { callbacks: { label: function(c) { return ' ' + c.label + ': ' + F(c.parsed) + ' (' + P(c.parsed / total * 100) + ')'; } } }
-        }
-      }
-    });
+    S._charts['multiRing'] = new Chart(ctxR, { type: 'doughnut', data: { labels: catData.map(c => c.cat), datasets: [{ data: catData.map(c => c.value), backgroundColor: catData.map(c => c.color), borderColor: 'var(--s1)', borderWidth: 3, hoverOffset: 8 }] }, options: { responsive: true, maintainAspectRatio: true, cutout: '50%', plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(c) { return ' ' + c.label + ': ' + F(c.parsed) + ' (' + P(c.parsed/total*100) + ')'; } } } } } });
     const leg = document.getElementById('legendMultiRing');
-    leg.innerHTML = '<div style="font-size:10px;color:var(--t3);margin-bottom:8px">LÉGENDE</div>' +
-      catData.map((c, i) => `<div style="display:flex;align-items:center;gap:10px;padding:6px 0;font-size:12px"><span style="width:10px;height:10px;border-radius:3px;background:${c.color};flex-shrink:0"></span><span style="flex:1;color:var(--t2)">${c.icon} ${c.cat}</span><span class="mono" style="color:var(--t1)">${F(c.value)}</span><span style="font-size:10px;color:${c.color};font-weight:600">${P(c.value/total*100)}</span></div>`).join('');
+    leg.innerHTML = '<div style="font-size:10px;color:var(--t3);margin-bottom:8px">LÉGENDE</div>' + catData.map((c, i) => `<div style="display:flex;align-items:center;gap:10px;padding:6px 0;font-size:12px"><span style="width:10px;height:10px;border-radius:3px;background:${c.color};flex-shrink:0"></span><span style="flex:1;color:var(--t2)">${c.icon} ${c.cat}</span><span class="mono" style="color:var(--t1)">${F(c.value)}</span><span style="font-size:10px;color:${c.color};font-weight:600">${P(c.value/total*100)}</span></div>`).join('');
+  } else {
+    document.getElementById('legendMultiRing').innerHTML = '<p style="color:var(--t3);padding:20px;text-align:center">Aucune dépense ce mois</p>';
   }
   
-  // Barres budget vs réel
   destroyC('barH');
   const ctxB = document.getElementById('chartBarH');
-  if (ctxB && catData.length) {
-    S._charts['barH'] = new Chart(ctxB, {
-      type: 'bar',
-      data: {
-        labels: catData.map(c => c.cat),
-        datasets: [
-          { label: 'Dépensé', data: catData.map(c => c.value), backgroundColor: catData.map(c => c.color + 'CC'), borderRadius: 6, borderSkipped: false },
-          { label: 'Budget', data: catData.map(c => c.budget), backgroundColor: 'transparent', borderColor: catData.map(c => c.color), borderWidth: 2, borderDash: [6, 4], type: 'line', pointRadius: 0 }
-        ]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false, indexAxis: 'y',
-        plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, pointStyle: 'circle', padding: 16, color: 'var(--t2)', font: { size: 11 } } }, tooltip: { callbacks: { label: function(c) { return c.dataset.label + ': ' + F(c.parsed.x); } } } },
-        scales: { x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { callback: function(v) { return F(v); } } }, y: { grid: { display: false } } }
-      }
-    });
-  }
+  if (ctxB && catData.length) { S._charts['barH'] = new Chart(ctxB, { type: 'bar', data: { labels: catData.map(c => c.cat), datasets: [{ label: 'Dépensé', data: catData.map(c => c.value), backgroundColor: catData.map(c => c.color+'CC'), borderRadius: 6, borderSkipped: false }, { label: 'Budget', data: catData.map(c => c.budget), backgroundColor: 'transparent', borderColor: catData.map(c => c.color), borderWidth: 2, borderDash: [6,4], type: 'line', pointRadius: 0 }] }, options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, pointStyle: 'circle', padding: 16, color: 'var(--t2)', font: { size: 11 } } }, tooltip: { callbacks: { label: function(c) { return c.dataset.label + ': ' + F(c.parsed.x); } } } }, scales: { x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { callback: function(v) { return F(v); } } }, y: { grid: { display: false } } } }); }
   
-  // Évolution
   destroyC('evo');
   const ctxE = document.getElementById('chartEvo');
-  if (ctxE) {
-    const moisLabels = [], moisDep = [], moisRev = [];
-    for (let i = 0; i <= m; i++) { moisLabels.push(M[i].slice(0, 4)); moisDep.push(depsM(y, i)); moisRev.push(salM()); }
-    S._charts['evo'] = new Chart(ctxE, {
-      type: 'line',
-      data: {
-        labels: moisLabels,
-        datasets: [
-          { label: 'Dépenses', data: moisDep, borderColor: '#E05555', backgroundColor: '#E0555518', fill: true, tension: 0.4, pointRadius: 4, borderWidth: 2 },
-          { label: 'Revenus', data: moisRev, borderColor: '#4DB6AC', backgroundColor: '#4DB6AC18', fill: true, tension: 0.4, pointRadius: 4, borderWidth: 2 }
-        ]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, pointStyle: 'circle', padding: 20, color: 'var(--t2)', font: { size: 11 } } }, tooltip: { callbacks: { label: function(c) { return c.dataset.label + ': ' + F(c.parsed.y); } } } },
-        scales: { x: { grid: { display: false } }, y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { callback: function(v) { return F(v); } } } }
-      }
-    });
+  if (ctxE) { const moisLabels = [], moisDep = [], moisRev = []; for (let i = 0; i <= m; i++) { moisLabels.push(M[i].slice(0,4)); moisDep.push(depsM(y, i)); moisRev.push(salM()); } S._charts['evo'] = new Chart(ctxE, { type: 'line', data: { labels: moisLabels, datasets: [{ label: 'Dépenses', data: moisDep, borderColor: '#E05555', backgroundColor: '#E0555518', fill: true, tension: 0.4, pointRadius: 4, borderWidth: 2 }, { label: 'Revenus', data: moisRev, borderColor: '#4DB6AC', backgroundColor: '#4DB6AC18', fill: true, tension: 0.4, pointRadius: 4, borderWidth: 2 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, pointStyle: 'circle', padding: 20, color: 'var(--t2)', font: { size: 11 } } }, tooltip: { callbacks: { label: function(c) { return c.dataset.label + ': ' + F(c.parsed.y); } } } }, scales: { x: { grid: { display: false } }, y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { callback: function(v) { return F(v); } } } } }); }
+}
+
+function renderGraphSalaires() {
+  const reels = S.salaire.salairesReels || [];
+  destroyC('salairesReels');
+  const ctxS = document.getElementById('chartSalairesReels');
+  if (ctxS && reels.length > 0) {
+    const triees = [...reels].sort((a,b) => new Date(a.date) - new Date(b.date));
+    S._charts['salairesReels'] = new Chart(ctxS, { type: 'bar', data: { labels: triees.map(s => s.date), datasets: [{ label: 'Salaire reçu', data: triees.map(s => s.montant), backgroundColor: triees.map((_,i) => i%2===0?'#4DB6ACCC':'#5B8DEFCC'), borderRadius: 8, borderSkipped: false }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(c) { return F(c.parsed.y); } } } }, scales: { x: { grid: { display: false } }, y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { callback: function(v) { return F(v); } } } } } });
+  }
+  
+  destroyC('cumulSalaires');
+  const ctxC = document.getElementById('chartCumulSalaires');
+  if (ctxC) {
+    const estimé = (S.salaire.netM||0) * 4.33;
+    const debut = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+    const moisReels = reels.filter(s => new Date(s.date) >= debut);
+    const cumul = moisReels.reduce((a,s) => a + s.montant, 0);
+    S._charts['cumulSalaires'] = new Chart(ctxC, { type: 'bar', data: { labels: ['Ce mois'], datasets: [{ label: 'Reçu', data: [cumul], backgroundColor: '#4DB6ACCC', borderRadius: 8, borderSkipped: false }, { label: 'Estimé', data: [estimé], backgroundColor: 'transparent', borderColor: '#FFC040', borderWidth: 2, borderDash: [5,5], type: 'line', pointRadius: 6, pointBackgroundColor: '#FFC040' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, pointStyle: 'circle', padding: 16, color: 'var(--t2)' } }, tooltip: { callbacks: { label: function(c) { return c.dataset.label + ': ' + F(c.parsed.y); } } } }, scales: { x: { grid: { display: false } }, y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { callback: function(v) { return F(v); } } } } } });
   }
 }
 
