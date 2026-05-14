@@ -272,21 +272,21 @@ tbody tr:hover{background:rgba(77,143,255,0.03)}
   
   <div class="g2" style="margin-bottom:18px">
     <div class="card">
-      <div class="card-title">🥧 Répartition des dépenses</div>
-      <div style="height:300px;display:flex;align-items:center;justify-content:center">
-        <canvas id="chartDough2"></canvas>
+      <div class="card-title">🥧 Répartition des dépenses — Ce mois</div>
+      <div style="display:flex;align-items:center;gap:20px">
+        <div style="flex:1;max-width:280px"><canvas id="chartMultiRing"></canvas></div>
+        <div id="legendMultiRing" style="flex:1;min-width:180px"></div>
       </div>
-      <div id="legendDough" style="margin-top:12px"></div>
     </div>
     <div class="card">
-      <div class="card-title">📊 Budgets vs Dépenses</div>
-      <div style="height:300px"><canvas id="chartBar2"></canvas></div>
+      <div class="card-title">📊 Budgets vs Dépenses réelles</div>
+      <div style="height:300px"><canvas id="chartBarH"></canvas></div>
     </div>
   </div>
   
-  <div class="card">
-    <div class="card-title">📈 Évolution mensuelle</div>
-    <div style="height:280px"><canvas id="chartLine2"></canvas></div>
+  <div class="card" style="margin-bottom:18px">
+    <div class="card-title">📈 Évolution mensuelle — 12 mois</div>
+    <div style="height:280px"><canvas id="chartEvo"></canvas></div>
   </div>
 </div>
       <div id="page-comparaison" class="page"><div class="section-title">📊 Comparaison mois/mois</div><div class="card" style="margin-bottom:16px"><div class="card-title">📈 Évolution</div><div style="height:280px"><canvas id="chartComparaison"></canvas></div></div><div class="card"><div class="card-title">📋 Détail</div><div class="tbl-wrap"><table><thead><tr><th>Mois</th><th>Revenus</th><th>Dépenses</th><th>vs préc.</th><th>Tendance</th></tr></thead><tbody id="tblComparaison"></tbody></table></div></div></div>
@@ -480,8 +480,269 @@ Chart.defaults.color = '#8895B3'; Chart.defaults.font.family = 'Plus Jakarta San
 function destroyC(k) { if (S._charts[k]) { S._charts[k].destroy(); delete S._charts[k]; } }
 function renderChartBar() { destroyC('bar'); const n=new Date(),y=n.getFullYear();const l=[],d=[],r=[];for(let i=Math.max(0,n.getMonth()-5);i<=n.getMonth();i++){l.push(M[i].slice(0,4));d.push(depsM(y,i));r.push(salM());}const ctx=document.getElementById('chartBar');if(ctx)S._charts['bar']=new Chart(ctx,{type:'bar',data:{labels:l,datasets:[{label:'Dépenses',data:d,backgroundColor:'#4D8FFFCC',borderRadius:6},{label:'Revenus',data:r,backgroundColor:'#00E699CC',borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false}}); }
 function renderChartDough() { destroyC('dough'); const n=new Date(),y=n.getFullYear(),m=n.getMonth();const l=[],d=[],c=[];S.categories.forEach(cat=>{const v=catM(cat,y,m);if(v>0){l.push(cat);d.push(v);c.push(CC[cat]||'#666');}});const ctx=document.getElementById('chartDough');if(ctx&&l.length)S._charts['dough']=new Chart(ctx,{type:'doughnut',data:{labels:l,datasets:[{data:d,backgroundColor:c,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'65%'}}); }
-function renderGraphiques() { const n=new Date(),y=n.getFullYear(),m=n.getMonth();destroyC('line');const cl=document.getElementById('chartLine');if(cl)S._charts['line']=new Chart(cl,{type:'line',data:{labels:M.map(x=>x.slice(0,4)),datasets:[{label:'Dépenses',data:Array.from({length:12},(_,i)=>depsM(y,i)),borderColor:'#4D8FFF',tension:.4,fill:true}]},options:{responsive:true,maintainAspectRatio:false}});destroyC('pie2');const cp=document.getElementById('chartPie2');if(cp){const l=[],d=[],c=[];S.categories.forEach(cat=>{const v=catM(cat,y,m);if(v>0){l.push(cat);d.push(v);c.push(CC[cat]||'#666');}});if(l.length)S._charts['pie2']=new Chart(cp,{type:'doughnut',data:{labels:l,datasets:[{data:d,backgroundColor:c}]},options:{responsive:true,maintainAspectRatio:false}});} }
-function renderComparaison() { const n=new Date(),y=n.getFullYear(),m=n.getMonth();const labels=[],depenses=[],revenus=[];for(let i=0;i<=m;i++){labels.push(M[i].slice(0,4));depenses.push(depsM(y,i));revenus.push(salM());}destroyC('comparaison');const ctx=document.getElementById('chartComparaison');if(ctx)S._charts['comparaison']=new Chart(ctx,{type:'bar',data:{labels,datasets:[{label:'Dépenses',data:depenses,backgroundColor:'#4D8FFFCC',borderRadius:6},{label:'Revenus',data:revenus,backgroundColor:'#00E699CC',borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false}});let html='';for(let i=0;i<=m;i++){const dep=depsM(y,i),rev=salM();let evol=0,tendance='—';if(i>0){const dp=depsM(y,i-1);evol=dp>0?((dep-dp)/dp*100):0;tendance=evol>5?'📈 Hausse':evol<-5?'📉 Baisse':'➡️ Stable';}html+=`<tr><td>${M[i]}</td><td class="mono" style="color:var(--a-green)">${F(rev)}</td><td class="mono">${F(dep)}</td><td class="mono">${i>0?(evol>0?'+':'')+evol.toFixed(1)+'%':'—'}</td><td>${tendance}</td></tr>`;}document.getElementById('tblComparaison').innerHTML=html; }
+function renderGraphiques() {
+  const n = new Date(), y = n.getFullYear(), m = n.getMonth();
+  const sM = salM(), totalDep = depsM(y, m);
+  
+  // Données par catégorie
+  const catData = [];
+  S.categories.forEach(cat => {
+    const v = catM(cat, y, m);
+    if (v > 0) catData.push({ cat, value: v, color: CC[cat] || '#888', icon: CI[cat] || '📌', budget: S.budgets[cat] || 0 });
+  });
+  catData.sort((a, b) => b.value - a.value);
+  
+  // ═══════════ GRAPHIQUE EN ANNEAU MULTI-PROGRESSIONS ═══════════
+  destroyC('multiRing');
+  const ctxRing = document.getElementById('chartMultiRing');
+  if (ctxRing && catData.length) {
+    const total = catData.reduce((a, c) => a + c.value, 0);
+    
+    // Créer plusieurs anneaux concentriques
+    const datasets = catData.map((c, i) => ({
+      label: c.cat,
+      data: catData.map((_, j) => j === i ? c.value : 0),
+      backgroundColor: catData.map((_, j) => j === i ? c.color : 'transparent'),
+      borderWidth: 0,
+      borderRadius: j === i ? 6 : 0,
+      weight: 1
+    }));
+    
+    // Un seul dataset avec toutes les valeurs pour l'anneau
+    S._charts['multiRing'] = new Chart(ctxRing, {
+      type: 'doughnut',
+      data: {
+        labels: catData.map(c => c.cat),
+        datasets: [{
+          data: catData.map(c => c.value),
+          backgroundColor: catData.map(c => c.color),
+          borderColor: 'var(--s1)',
+          borderWidth: 4,
+          hoverBorderWidth: 6,
+          hoverOffset: 8,
+          borderRadius: 4,
+          spacing: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        cutout: '40%',
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function(ctx) {
+                return ' ' + ctx.label + ': ' + F(ctx.parsed) + ' (' + P(ctx.parsed / total * 100) + ')';
+              }
+            }
+          }
+        }
+      },
+      plugins: [{
+        id: 'centerText',
+        afterDraw: function(chart) {
+          const ctx = chart.ctx;
+          const centerX = (chart.chartArea.left + chart.chartArea.right) / 2;
+          const centerY = (chart.chartArea.top + chart.chartArea.bottom) / 2;
+          ctx.save();
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--t1').trim();
+          ctx.font = 'bold 22px "JetBrains Mono", monospace';
+          ctx.fillText(F(total), centerX, centerY - 6);
+          ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--t3').trim();
+          ctx.font = '10px "Plus Jakarta Sans", sans-serif';
+          ctx.fillText('Total dépensé', centerX, centerY + 16);
+          ctx.restore();
+        }
+      }]
+    });
+    
+    // Légende personnalisée
+    const legendEl = document.getElementById('legendMultiRing');
+    legendEl.innerHTML = '<div style="font-size:10px;color:var(--t3);margin-bottom:8px">LÉGENDE</div>' + 
+      catData.map((c, i) => `
+        <div style="display:flex;align-items:center;gap:10px;padding:8px 10px;margin-bottom:4px;border-radius:var(--r-sm);background:${i % 2 === 0 ? 'var(--s2)' : 'transparent'};transition:all .2s;cursor:default">
+          <span style="width:10px;height:10px;border-radius:3px;background:${c.color};flex-shrink:0;box-shadow:0 0 6px ${c.color}44"></span>
+          <span style="flex:1;font-size:12px;font-weight:500;color:var(--t1)">${c.icon} ${c.cat}</span>
+          <span style="font-family:var(--f-mono);font-size:13px;font-weight:600;color:var(--t1)">${F(c.value)}</span>
+          <span style="font-size:11px;color:${c.color};font-weight:600">${P(c.value / total * 100)}</span>
+        </div>
+      `).join('');
+  }
+  
+  // ═══════════ GRAPHIQUE BARRES HORIZONTAL BUDGET VS RÉEL ═══════════
+  destroyC('barH');
+  const ctxBar = document.getElementById('chartBarH');
+  if (ctxBar && catData.length) {
+    S._charts['barH'] = new Chart(ctxBar, {
+      type: 'bar',
+      data: {
+        labels: catData.map(c => c.cat),
+        datasets: [
+          {
+            label: 'Dépensé',
+            data: catData.map(c => c.value),
+            backgroundColor: catData.map(c => c.color + 'CC'),
+            borderRadius: 6,
+            borderSkipped: false
+          },
+          {
+            label: 'Budget',
+            data: catData.map(c => c.budget),
+            backgroundColor: 'transparent',
+            borderColor: catData.map(c => c.color),
+            borderWidth: 2,
+            borderDash: [6, 4],
+            type: 'line',
+            pointRadius: 0,
+            tension: 0
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        indexAxis: 'y',
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              usePointStyle: true,
+              pointStyle: 'circle',
+              padding: 20,
+              color: 'var(--t2)',
+              font: { size: 11, family: 'Plus Jakarta Sans' }
+            }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(ctx) {
+                return ctx.dataset.label + ': ' + F(ctx.parsed.x);
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: { color: 'rgba(255,255,255,0.04)' },
+            ticks: { callback: function(v) { return F(v); }, font: { size: 10 }, color: 'var(--t3)' }
+          },
+          y: {
+            grid: { display: false },
+            ticks: { font: { size: 11, weight: '500' }, color: 'var(--t2)' }
+          }
+        }
+      }
+    });
+  }
+  
+  // ═══════════ ÉVOLUTION MENSUELLE ═══════════
+  destroyC('evo');
+  const ctxEvo = document.getElementById('chartEvo');
+  if (ctxEvo) {
+    const moisLabels = [], moisDep = [], moisRev = [];
+    for (let i = 0; i <= m; i++) {
+      moisLabels.push(M[i].slice(0, 4));
+      moisDep.push(depsM(y, i));
+      moisRev.push(salM());
+    }
+    
+    // Dégradés
+    const gradientDep = ctxEvo.getContext('2d').createLinearGradient(0, 0, 0, ctxEvo.height || 280);
+    gradientDep.addColorStop(0, '#E0555540');
+    gradientDep.addColorStop(1, '#E0555505');
+    const gradientRev = ctxEvo.getContext('2d').createLinearGradient(0, 0, 0, ctxEvo.height || 280);
+    gradientRev.addColorStop(0, '#4DB6AC40');
+    gradientRev.addColorStop(1, '#4DB6AC05');
+    
+    S._charts['evo'] = new Chart(ctxEvo, {
+      type: 'line',
+      data: {
+        labels: moisLabels,
+        datasets: [
+          {
+            label: 'Dépenses',
+            data: moisDep,
+            borderColor: '#E05555',
+            backgroundColor: gradientDep,
+            fill: true,
+            tension: 0.4,
+            pointRadius: 5,
+            pointBackgroundColor: '#E05555',
+            pointBorderColor: 'var(--s1)',
+            pointBorderWidth: 2,
+            pointHoverRadius: 8,
+            borderWidth: 2.5
+          },
+          {
+            label: 'Revenus',
+            data: moisRev,
+            borderColor: '#4DB6AC',
+            backgroundColor: gradientRev,
+            fill: true,
+            tension: 0.4,
+            pointRadius: 5,
+            pointBackgroundColor: '#4DB6AC',
+            pointBorderColor: 'var(--s1)',
+            pointBorderWidth: 2,
+            pointHoverRadius: 8,
+            borderWidth: 2.5
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { intersect: false, mode: 'index' },
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              usePointStyle: true,
+              pointStyle: 'circle',
+              padding: 24,
+              color: 'var(--t2)',
+              font: { size: 11, family: 'Plus Jakarta Sans' },
+              generateLabels: function(chart) {
+                return chart.data.datasets.map(function(ds, i) {
+                  return {
+                    text: ds.label,
+                    fillStyle: ds.borderColor,
+                    strokeStyle: ds.borderColor,
+                    lineWidth: 2,
+                    hidden: false,
+                    index: i,
+                    pointStyle: 'circle',
+                    pointStyleWidth: 8
+                  };
+                });
+              }
+            }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(ctx) {
+                return ' ' + ctx.dataset.label + ': ' + F(ctx.parsed.y);
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: { display: false },
+            ticks: { font: { size: 11, weight: '500' }, color: 'var(--t2)' }
+          },
+          y: {
+            grid: { color: 'rgba(255,255,255,0.04)' },
+            ticks: { callback: function(v) { return F(v); }, font: { size: 10 }, color: 'var(--t3)' }
+          }
+        }
+      }
+    });
+  }
+}function renderComparaison() { const n=new Date(),y=n.getFullYear(),m=n.getMonth();const labels=[],depenses=[],revenus=[];for(let i=0;i<=m;i++){labels.push(M[i].slice(0,4));depenses.push(depsM(y,i));revenus.push(salM());}destroyC('comparaison');const ctx=document.getElementById('chartComparaison');if(ctx)S._charts['comparaison']=new Chart(ctx,{type:'bar',data:{labels,datasets:[{label:'Dépenses',data:depenses,backgroundColor:'#4D8FFFCC',borderRadius:6},{label:'Revenus',data:revenus,backgroundColor:'#00E699CC',borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false}});let html='';for(let i=0;i<=m;i++){const dep=depsM(y,i),rev=salM();let evol=0,tendance='—';if(i>0){const dp=depsM(y,i-1);evol=dp>0?((dep-dp)/dp*100):0;tendance=evol>5?'📈 Hausse':evol<-5?'📉 Baisse':'➡️ Stable';}html+=`<tr><td>${M[i]}</td><td class="mono" style="color:var(--a-green)">${F(rev)}</td><td class="mono">${F(dep)}</td><td class="mono">${i>0?(evol>0?'+':'')+evol.toFixed(1)+'%':'—'}</td><td>${tendance}</td></tr>`;}document.getElementById('tblComparaison').innerHTML=html; }
 
 function renderDeps() {
   populateFilters();
@@ -503,10 +764,12 @@ function populateFilters() {
 function calChange(d) { if (d===0) { S.calM=new Date().getMonth(); S.calY=new Date().getFullYear(); } else { S.calM+=d; if (S.calM>11){S.calM=0;S.calY++;} if (S.calM<0){S.calM=11;S.calY--;} } renderCal(); }
 function renderCal() {
   const y = S.calY, m = S.calM;
-  document.getElementById('calTitle').textContent = `${M[m]} ${y}`;
+  document.getElementById('calTitle').textContent = M[m] + ' ' + y;
+  
   const first = new Date(y, m, 1).getDay();
   const adj = (first + 6) % 7;
   const nb = new Date(y, m + 1, 0).getDate();
+  
   const bd = {};
   S.depenses.forEach(d => {
     const dt = new Date(d.date);
@@ -515,35 +778,30 @@ function renderCal() {
       bd[day] = (bd[day] || 0) + d.montant;
     }
   });
+  
   const ts = TN();
   const grid = document.getElementById('calGrid');
   grid.innerHTML = '';
-  ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].forEach(j => {
+  
+  ['L', 'M', 'M', 'J', 'V', 'S', 'D'].forEach(j => {
     const d = document.createElement('div');
     d.className = 'cal-hdr';
     d.textContent = j;
     grid.appendChild(d);
   });
+  
   for (let i = 0; i < adj; i++) {
     const e = document.createElement('div');
     e.className = 'cal-day empty';
     grid.appendChild(e);
   }
+  
   for (let d = 1; d <= nb; d++) {
-    const ds = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    const ds = y + '-' + String(m + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
     const amt = bd[d] || 0;
     const el = document.createElement('div');
-    el.className = `cal-day${amt > 0 ? ' has-exp' : ''}${ds === ts ? ' today' : ''}`;
-    el.innerHTML = `<span class="cal-num">${d}</span>${amt > 0 ? `<div class="cal-dot"></div><div class="cal-amt">${F(amt)}</div>` : ''}`;
-    el.onclick = () => {
-      const deps = S.depenses.filter(x => x.date === ds);
-      if (deps.length) {
-        let msg = `📅 ${ds}\n\n`;
-        deps.forEach(x => msg += `• ${x.lieu || x.desc || x.cat}: ${F(x.montant)}\n`);
-        msg += `\nTotal: ${F(deps.reduce((a, x) => a + x.montant, 0))}`;
-        alert(msg);
-      }
-    };
+    el.className = 'cal-day' + (amt > 0 ? ' has-exp' : '') + (ds === ts ? ' today' : '');
+    el.innerHTML = '<span class="cal-num">' + d + '</span>' + (amt > 0 ? '<div class="cal-dot"></div><div class="cal-amt">' + F(amt) + '</div>' : '');
     grid.appendChild(el);
   }
 }
