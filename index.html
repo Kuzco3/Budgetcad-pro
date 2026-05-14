@@ -243,10 +243,52 @@ tbody tr:hover{background:rgba(77,143,255,0.03)}
 
       <div id="page-scanner" class="page"><div class="section-title">Scanner facture</div><div class="g2"><div class="scan-zone" onclick="document.getElementById('scanInput').click()"><div style="font-size:40px;margin-bottom:12px">📷</div><div style="font-weight:700">Photographier</div></div><input type="file" id="scanInput" accept="image/*" capture="environment" style="display:none" onchange="handleScan(event)"><div><div class="card"><div class="card-title">Données extraites</div><div id="ocrOut"><div class="empty"><p>En attente</p></div></div></div><div id="ocrImport" style="display:none;margin-top:10px"><button class="btn btn-success" style="width:100%" onclick="importOCR()">Importer</button></div></div></div></div>
 
-      <div id="page-budget" class="page"><div style="display:flex;justify-content:space-between;margin-bottom:20px"><div class="section-title">Budget</div><button class="btn btn-ghost btn-sm" onclick="openModal('mBudget')">Modifier</button></div><div id="budgetAlertes" style="margin-bottom:16px"></div><div class="card"><div class="card-title">Budget mensuel par catégorie</div><div id="budgetList"></div></div></div>
-
-      <div id="page-graphiques" class="page"><div class="section-title">Graphiques</div><div class="g2" style="margin-bottom:16px"><div class="card"><div class="card-title">Évolution mensuelle</div><div style="height:240px"><canvas id="chartLine"></canvas></div></div><div class="card"><div class="card-title">Par catégorie ce mois</div><div style="height:240px"><canvas id="chartPie2"></canvas></div></div></div></div>
-
+<div id="page-budget" class="page">
+  <div class="section-title">Budget & Suivi</div>
+  <div class="section-sub">Analyse détaillée par catégorie</div>
+  
+  <div id="budgetAlertes" style="margin-bottom:16px"></div>
+  
+  <div class="g2" style="margin-bottom:16px">
+    <div class="card">
+      <div class="card-title">📊 Résumé global</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px" id="budgetResumeGlobal"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">🎯 Budgets vs Réel</div>
+      <div style="height:240px"><canvas id="chartBudget"></canvas></div>
+    </div>
+  </div>
+  
+  <div class="card">
+    <div class="card-title">📋 Détail par catégorie</div>
+    <div id="budgetList"></div>
+    <button class="btn btn-ghost btn-sm" onclick="openModal('mBudget')" style="margin-top:12px">⚙️ Modifier les budgets</button>
+  </div>
+</div>
+<div id="page-graphiques" class="page">
+  <div class="section-title">Graphiques & Analyses</div>
+  <div class="section-sub">Visualisation détaillée de vos finances</div>
+  
+  <div class="g2" style="margin-bottom:18px">
+    <div class="card">
+      <div class="card-title">🥧 Répartition des dépenses</div>
+      <div style="height:300px;display:flex;align-items:center;justify-content:center">
+        <canvas id="chartDough2"></canvas>
+      </div>
+      <div id="legendDough" style="margin-top:12px"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">📊 Budgets vs Dépenses</div>
+      <div style="height:300px"><canvas id="chartBar2"></canvas></div>
+    </div>
+  </div>
+  
+  <div class="card">
+    <div class="card-title">📈 Évolution mensuelle</div>
+    <div style="height:280px"><canvas id="chartLine2"></canvas></div>
+  </div>
+</div>
       <div id="page-comparaison" class="page"><div class="section-title">📊 Comparaison mois/mois</div><div class="card" style="margin-bottom:16px"><div class="card-title">📈 Évolution</div><div style="height:280px"><canvas id="chartComparaison"></canvas></div></div><div class="card"><div class="card-title">📋 Détail</div><div class="tbl-wrap"><table><thead><tr><th>Mois</th><th>Revenus</th><th>Dépenses</th><th>vs préc.</th><th>Tendance</th></tr></thead><tbody id="tblComparaison"></tbody></table></div></div></div>
 
       <div id="page-epargne" class="page"><div style="display:flex;justify-content:space-between;margin-bottom:20px"><div class="section-title">Épargne</div><button class="btn btn-primary btn-sm" onclick="openModal('mObj')">+ Objectif</button></div><div class="kpi-grid" id="kpiEpargne"></div><div class="card"><div class="card-title">Mes objectifs</div><div id="objList"></div></div></div>
@@ -459,8 +501,52 @@ function populateFilters() {
 }
 
 function calChange(d) { if (d===0) { S.calM=new Date().getMonth(); S.calY=new Date().getFullYear(); } else { S.calM+=d; if (S.calM>11){S.calM=0;S.calY++;} if (S.calM<0){S.calM=11;S.calY--;} } renderCal(); }
-function renderCal() { const y=S.calY,m=S.calM; document.getElementById('calTitle').textContent=`${M[m]} ${y}`; const first=new Date(y,m,1).getDay(),adj=(first+6)%7,nb=new Date(y,m+1,0).getDate(); const bd={}; S.depenses.forEach(d=>{const dt=new Date(d.date);if(dt.getFullYear()===y&&dt.getMonth()===m){const day=parseInt(d.date.slice(8));bd[day]=(bd[day]||0)+d.montant;}}); const ts=TN(); const grid=document.getElementById('calGrid'); grid.innerHTML=''; ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'].forEach(j=>{const d=document.createElement('div');d.className='cal-hdr';d.textContent=j;grid.appendChild(d);}); for(let i=0;i<adj;i++){const e=document.createElement('div');e.className='cal-day empty';grid.appendChild(e);} for(let d=1;d<=nb;d++){const ds=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;const amt=bd[d]||0;const el=document.createElement('div');el.className=`cal-day${amt>0?' has-exp':''}${ds===ts?' today':''}`;el.innerHTML=`<span class="cal-num">${d}</span>${amt>0?`<div class="cal-dot"></div><div class="cal-amt">${F(amt)}</div>`:''}`;grid.appendChild(el);} }
-
+function renderCal() {
+  const y = S.calY, m = S.calM;
+  document.getElementById('calTitle').textContent = `${M[m]} ${y}`;
+  const first = new Date(y, m, 1).getDay();
+  const adj = (first + 6) % 7;
+  const nb = new Date(y, m + 1, 0).getDate();
+  const bd = {};
+  S.depenses.forEach(d => {
+    const dt = new Date(d.date);
+    if (dt.getFullYear() === y && dt.getMonth() === m) {
+      const day = parseInt(d.date.slice(8));
+      bd[day] = (bd[day] || 0) + d.montant;
+    }
+  });
+  const ts = TN();
+  const grid = document.getElementById('calGrid');
+  grid.innerHTML = '';
+  ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].forEach(j => {
+    const d = document.createElement('div');
+    d.className = 'cal-hdr';
+    d.textContent = j;
+    grid.appendChild(d);
+  });
+  for (let i = 0; i < adj; i++) {
+    const e = document.createElement('div');
+    e.className = 'cal-day empty';
+    grid.appendChild(e);
+  }
+  for (let d = 1; d <= nb; d++) {
+    const ds = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    const amt = bd[d] || 0;
+    const el = document.createElement('div');
+    el.className = `cal-day${amt > 0 ? ' has-exp' : ''}${ds === ts ? ' today' : ''}`;
+    el.innerHTML = `<span class="cal-num">${d}</span>${amt > 0 ? `<div class="cal-dot"></div><div class="cal-amt">${F(amt)}</div>` : ''}`;
+    el.onclick = () => {
+      const deps = S.depenses.filter(x => x.date === ds);
+      if (deps.length) {
+        let msg = `📅 ${ds}\n\n`;
+        deps.forEach(x => msg += `• ${x.lieu || x.desc || x.cat}: ${F(x.montant)}\n`);
+        msg += `\nTotal: ${F(deps.reduce((a, x) => a + x.montant, 0))}`;
+        alert(msg);
+      }
+    };
+    grid.appendChild(el);
+  }
+}
 function handleScan(e) { const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>runOCR(ev.target.result);r.readAsDataURL(f); }
 async function runOCR(src) { const el=document.getElementById('ocrOut');el.innerHTML='<p style="padding:20px">Analyse OCR...</p>';try{const{data:{text}}=await Tesseract.recognize(src,'fra+eng');parseOCR(text);}catch(err){el.innerHTML=`<div class="alert danger">${err.message}</div>`;} }
 function parseOCR(text) { const lines=text.split('\n').filter(l=>l.trim().length>2);const items=[];lines.forEach(l=>{const m=l.match(/\$?\s*(\d+[.,]\d{2})\s*$/);if(m){const p=parseFloat(m[1].replace(',','.'));const d=l.replace(m[0],'').trim();if(p>0&&d.length>1)items.push({desc:d,price:p,cat:autoCat('',d),sel:true});}});const el=document.getElementById('ocrOut');if(!items.length){el.innerHTML='<div class="alert warning">Aucun article</div>';return;}ST._ocr=items;el.innerHTML=`<div class="alert success">${items.length} articles</div>`+items.map((it,i)=>`<div class="ocr-line"><input type="checkbox" class="ocr-check" id="ocrC${i}" ${it.sel?'checked':''}><input type="text" class="fc" value="${it.desc}" id="ocrD${i}"><select class="fc" id="ocrCat${i}">${S.categories.map(c=>`<option ${c===it.cat?'selected':''}>${c}</option>`).join('')}</select><input type="number" class="fc fc-num" value="${it.price}" id="ocrP${i}" style="width:80px"></div>`).join('');document.getElementById('ocrImport').style.display='block'; }
@@ -671,6 +757,202 @@ function stopScanner() {
 
 function init() { loadState(); if(!S.params.palette)S.params.palette='or-noir'; document.documentElement.setAttribute('data-palette',S.params.palette); document.getElementById('dDate').value=TN(); document.getElementById('dHeure').value=TM(); autoCalcNonDepense(); renderDashboard(); }
 document.addEventListener('DOMContentLoaded', init);
+
+function renderBudget() {
+  const n = new Date(), y = n.getFullYear(), m = n.getMonth();
+  const sM = salM(), depM = depsM(y, m);
+  
+  // Résumé global
+  const elResume = document.getElementById('budgetResumeGlobal');
+  if (elResume) {
+    const totalBudget = Object.values(S.budgets).reduce((a, b) => a + (b || 0), 0);
+    const budgetUtilise = depM;
+    const pctGlobal = totalBudget > 0 ? Math.min(budgetUtilise / totalBudget * 100, 100) : 0;
+    const col = pctGlobal >= 100 ? 'var(--a-red)' : pctGlobal >= 85 ? 'var(--a-amber)' : 'var(--a-green)';
+    
+    elResume.innerHTML = `
+      <div style="text-align:center;padding:12px;background:var(--s2);border-radius:var(--r-md)">
+        <div style="font-size:28px;font-weight:700;color:${col}">${P(pctGlobal)}</div>
+        <div style="font-size:10px;color:var(--t3)">Budget utilisé</div>
+      </div>
+      <div style="text-align:center;padding:12px;background:var(--s2);border-radius:var(--r-md)">
+        <div style="font-size:28px;font-weight:700;color:var(--a-green)">${F(sM - depM)}</div>
+        <div style="font-size:10px;color:var(--t3)">Reste à dépenser</div>
+      </div>
+      <div style="text-align:center;padding:12px;background:var(--s2);border-radius:var(--r-md)">
+        <div style="font-size:28px;font-weight:700;color:var(--a-blue)">${F(totalBudget)}</div>
+        <div style="font-size:10px;color:var(--t3)">Budget total</div>
+      </div>
+      <div style="text-align:center;padding:12px;background:var(--s2);border-radius:var(--r-md)">
+        <div style="font-size:28px;font-weight:700;color:var(--a-purple)">${F(sM)}</div>
+        <div style="font-size:10px;color:var(--t3)">Revenu mensuel</div>
+      </div>
+    `;
+  }
+  
+  // Graphique budgets vs réel
+  destroyC('budget');
+  const ctx = document.getElementById('chartBudget');
+  if (ctx) {
+    const labels = S.categories.filter(c => (S.budgets[c] || 0) > 0);
+    const budgets = labels.map(c => S.budgets[c] || 0);
+    const reel = labels.map(c => catM(c, y, m));
+    
+    S._charts['budget'] = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels.map(c => (CI[c] || '📌') + ' ' + c),
+        datasets: [
+          { label: 'Budget', data: budgets, backgroundColor: '#5B8DEF88', borderRadius: 6, borderSkipped: false },
+          { label: 'Dépensé', data: reel, backgroundColor: reel.map((v, i) => v > (budgets[i] || 1) ? '#E0555588' : '#4DB6AC88'), borderRadius: 6, borderSkipped: false }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+        plugins: {
+          legend: { position: 'bottom', labels: { usePointStyle: true, pointStyle: 'circle', padding: 16, color: 'var(--t2)', font: { size: 11 } } },
+          tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + F(ctx.parsed.x) } }
+        },
+        scales: { x: { grid: { color: 'rgba(255,255,255,0.04)' } }, y: { grid: { display: false } } }
+      }
+    });
+  }
+  
+  // Alerte zone
+  document.getElementById('budgetAlertes').innerHTML = document.getElementById('alertZone')?.innerHTML || '';
+  
+  // Liste détaillée
+  document.getElementById('budgetList').innerHTML = S.categories.map(cat => {
+    const bg = S.budgets[cat] || 0, d = catM(cat, y, m);
+    const p = bg > 0 ? Math.min(d / bg * 100, 100) : 0;
+    const col = d >= bg ? 'var(--a-red)' : d >= bg * .85 ? 'var(--a-amber)' : 'var(--a-green)';
+    const restant = Math.max(0, bg - d);
+    return `
+      <div style="margin-bottom:20px;padding:16px;background:var(--s2);border-radius:var(--r-lg);border:1px solid var(--b2);transition:all .2s">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="font-size:24px">${CI[cat] || '📌'}</span>
+            <div>
+              <div style="font-weight:700;font-size:14px">${cat}</div>
+              <div style="font-size:10px;color:var(--t3)">Budget: ${F(bg)}/mois</div>
+            </div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-family:var(--f-mono);font-weight:700;font-size:16px;color:${col}">${F(d)}</div>
+            <div style="font-size:10px;color:var(--t3)">Reste: ${F(restant)} (${P(p)})</div>
+          </div>
+        </div>
+        <div class="progress" style="height:8px;background:var(--s3);border-radius:4px">
+          <div class="progress-fill" style="width:${p}%;background:${col};border-radius:4px"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:9px;color:var(--t3)">
+          <span>0 $</span><span>${F(bg)}</span>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function renderGraphiques() {
+  const n = new Date(), y = n.getFullYear(), m = n.getMonth();
+  const sM = salM();
+  
+  // Données
+  const catData = [];
+  S.categories.forEach(cat => {
+    const v = catM(cat, y, m);
+    if (v > 0) catData.push({ cat, value: v, color: CC[cat] || '#888', icon: CI[cat] || '📌', budget: S.budgets[cat] || 0 });
+  });
+  catData.sort((a, b) => b.value - a.value);
+  
+  // Graphique Doughnut avec légende
+  destroyC('dough2');
+  const ctxDough = document.getElementById('chartDough2');
+  if (ctxDough && catData.length) {
+    const total = catData.reduce((a, c) => a + c.value, 0);
+    S._charts['dough2'] = new Chart(ctxDough, {
+      type: 'doughnut',
+      data: {
+        labels: catData.map(c => c.cat),
+        datasets: [{ data: catData.map(c => c.value), backgroundColor: catData.map(c => c.color), borderWidth: 0, hoverOffset: 10 }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false, cutout: '55%',
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${F(ctx.parsed)} (${P(ctx.parsed / total * 100)})` } }
+        }
+      }
+    });
+    
+    // Légende personnalisée
+    const legendEl = document.getElementById('legendDough');
+    legendEl.innerHTML = catData.map(c => `
+      <div style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:11px">
+        <span style="width:12px;height:12px;border-radius:3px;background:${c.color};flex-shrink:0"></span>
+        <span style="flex:1;color:var(--t2)">${c.icon} ${c.cat}</span>
+        <span style="font-family:var(--f-mono);color:var(--t1);font-weight:500">${F(c.value)}</span>
+        <span style="font-size:10px;color:var(--t3)">${P(c.value / total * 100)}</span>
+      </div>
+    `).join('');
+  }
+  
+  // Graphique barres budgets vs dépenses
+  destroyC('bar2');
+  const ctxBar = document.getElementById('chartBar2');
+  if (ctxBar && catData.length) {
+    const labels = catData.map(c => c.cat);
+    S._charts['bar2'] = new Chart(ctxBar, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [
+          { label: 'Dépensé', data: catData.map(c => c.value), backgroundColor: catData.map(c => c.color + 'AA'), borderRadius: 6, borderSkipped: false },
+          { label: 'Budget', data: catData.map(c => c.budget), backgroundColor: 'transparent', borderColor: catData.map(c => c.color), borderWidth: 2, borderDash: [5, 5], type: 'line', pointRadius: 0, tension: 0.1 }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'bottom', labels: { usePointStyle: true, pointStyle: 'circle', padding: 16, color: 'var(--t2)', font: { size: 11 } } },
+          tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + F(ctx.parsed.y) } }
+        },
+        scales: { x: { grid: { display: false }, ticks: { font: { size: 10 } } }, y: { grid: { color: 'rgba(255,255,255,0.04)' } } }
+      }
+    });
+  }
+  
+  // Graphique ligne évolution
+  destroyC('line2');
+  const ctxLine = document.getElementById('chartLine2');
+  if (ctxLine) {
+    const moisLabels = [];
+    const moisDep = [];
+    const moisRev = [];
+    for (let i = 0; i <= m; i++) {
+      moisLabels.push(M[i].slice(0, 4));
+      moisDep.push(depsM(y, i));
+      moisRev.push(salM());
+    }
+    S._charts['line2'] = new Chart(ctxLine, {
+      type: 'line',
+      data: {
+        labels: moisLabels,
+        datasets: [
+          { label: 'Dépenses', data: moisDep, borderColor: '#E05555', backgroundColor: '#E0555518', fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#E05555', borderWidth: 2 },
+          { label: 'Revenus', data: moisRev, borderColor: '#4DB6AC', backgroundColor: '#4DB6AC18', fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#4DB6AC', borderWidth: 2 }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'bottom', labels: { usePointStyle: true, pointStyle: 'circle', padding: 16, color: 'var(--t2)', font: { size: 11 } } },
+          tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + F(ctx.parsed.y) } }
+        },
+        scales: { x: { grid: { display: false } }, y: { grid: { color: 'rgba(255,255,255,0.04)' } } }
+      }
+    });
+  }
+}
 
 </script>
 </body>
