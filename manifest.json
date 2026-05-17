@@ -2,20 +2,20 @@
   "name": "BudgetCAD",
   "short_name": "BudgetCAD",
   "description": "Gestionnaire financier personnel",
-  "start_url": ".",
+  "start_url": "/Budgetcad-pro/",
   "display": "standalone",
   "background_color": "#0A1024",
   "theme_color": "#0A1024",
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='102' fill='%230A1024'/%3E%3Crect width='512' height='512' rx='102' fill='none' stroke='%234D8FFF' stroke-width='8'/%3E%3Cpolyline points='128,358 205,256 256,282 333,179 410,230' stroke='%234D8FFF' stroke-width='24' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ctext x='256' y='440' font-family='sans-serif' font-size='80' font-weight='bold' fill='%234D8FFF' text-anchor='middle'%3ECAD%3C/text%3E%3Ccircle cx='410' cy='230' r='28' fill='%2300E699'/%3E%3C/svg%3E",
+      "src": "icon-512.svg",
       "sizes": "512x512",
       "type": "image/svg+xml",
       "purpose": "any"
     },
     {
-      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='38' fill='%230A1024'/%3E%3Cpolyline points='48,134 77,96 96,106 125,67 154,86' stroke='%234D8FFF' stroke-width='10' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='154' cy='86' r='12' fill='%2300E699'/%3E%3C/svg%3E",
+      "src": "icon-192.svg",
       "sizes": "192x192",
       "type": "image/svg+xml",
       "purpose": "any"
