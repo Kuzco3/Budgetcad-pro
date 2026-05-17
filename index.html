@@ -231,7 +231,8 @@ tbody tr:hover{background:rgba(77,143,255,0.03)}
       </div>
       <div class="nav-group"><div class="nav-group-label">Réglages</div>
         <div class="nav-item" data-p="params" onclick="nav('params')"><div class="nav-icon"><svg width="16" height="16" fill="none"><circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.5"/></svg></div>Paramètres</div>
-        <div class="nav-item" data-p="legal" onclick="nav('legal')"><div class="nav-icon"><svg width="16" height="16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M8 4v4l2 2" stroke="currentColor" stroke-width="1.5"/></svg></div>Confidentialité</div>
+        <div class="nav-item" data-p="aide" onclick="nav('aide')"><div class="nav-icon"><svg width="16" height="16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/><text x="5" y="12" font-size="9" fill="currentColor">?</text></svg></div>Aide</div>
+<div class="nav-item" data-p="legal" onclick="nav('legal')"><div class="nav-icon"><svg width="16" height="16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M8 4v4l2 2" stroke="currentColor" stroke-width="1.5"/></svg></div>Confidentialité</div>
       </div>
     </nav>
     <div class="sidebar-footer"><div class="salary-card"><div class="salary-label">Revenu net / semaine</div><div class="salary-value" id="sbSal">1 020,00 $</div><div class="salary-sub" id="sbSalSub">min 1 009 $ · max 1 120 $</div></div></div>
@@ -289,8 +290,175 @@ tbody tr:hover{background:rgba(77,143,255,0.03)}
         <button class="palette-btn" data-palette="emeraude-nuit" onclick="changerPalette('emeraude-nuit',this)" style="display:flex;align-items:center;width:100%;padding:12px 16px;border-radius:var(--r-md);font-size:13px;cursor:pointer;border:1px solid var(--b2);background:var(--s2);color:var(--t2);text-align:left"><span style="display:inline-block;width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,#4DB6AC,#26A69A);margin-right:8px"></span>Émeraude Nuit</button>
         <button class="palette-btn" data-palette="amethyste" onclick="changerPalette('amethyste',this)" style="display:flex;align-items:center;width:100%;padding:12px 16px;border-radius:var(--r-md);font-size:13px;cursor:pointer;border:1px solid var(--b2);background:var(--s2);color:var(--t2);text-align:left"><span style="display:inline-block;width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,#B39DDB,#7E57C2);margin-right:8px"></span>Améthyste</button>
         <button class="palette-btn" data-palette="onyx-minimal" onclick="changerPalette('onyx-minimal',this)" style="display:flex;align-items:center;width:100%;padding:12px 16px;border-radius:var(--r-md);font-size:13px;cursor:pointer;border:1px solid var(--b2);background:var(--s2);color:var(--t2);text-align:left"><span style="display:inline-block;width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,#A0A0A0,#606060);margin-right:8px"></span>Onyx Minimal</button>
-      </div></div><div class="card"><div class="fg"><label class="fg-label">Seuil alerte (%)</label><input type="range" id="alertSeuil" min="50" max="100" value="85" class="fc" oninput="document.getElementById('alertSeuilV').textContent=this.value+'%'"><div style="text-align:center;color:var(--a-blue)" id="alertSeuilV">85%</div></div><button class="btn btn-primary btn-sm" onclick="saveParams()">Enregistrer</button><button class="btn btn-danger btn-sm" onclick="clearData()" style="margin-left:8px">Effacer données</button></div></div>
-<div id="page-legal" class="page"><div class="section-title">📝 Mentions légales</div><div class="tabs"><button class="tab active" onclick="switchLegalTab('privacy')">🔒 Confidentialité</button><button class="tab" onclick="switchLegalTab('terms')">📋 Conditions</button><button class="tab" onclick="switchLegalTab('copyright')">© Copyright</button></div><div id="privacy" class="tab-panel active"><div class="card"><h3>🔒 Politique de confidentialité</h3><p style="color:var(--t3);font-size:11px;margin-bottom:12px">Dernière mise à jour : Mai 2026</p><p style="font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:12px"><strong>1. Collecte :</strong> BudgetCAD ne collecte aucune donnée personnelle. Tout est stocké localement (localStorage).</p><p style="font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:12px"><strong>2. Utilisation :</strong> Données utilisées uniquement pour vos tableaux de bord.</p><p style="font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:12px"><strong>3. Partage :</strong> Aucune donnée transmise à des tiers.</p><p style="font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:12px"><strong>4. Conformité :</strong> Conforme à la LPRPDE (Loi sur la protection des renseignements personnels et les documents électroniques, Canada).</p></div></div><div id="terms" class="tab-panel"><div class="card"><h3>📋 Conditions d'utilisation</h3><p style="color:var(--t3);font-size:11px;margin-bottom:12px">Dernière mise à jour : Mai 2026</p><p style="font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:12px">BudgetCAD est fourni « tel quel » sans garantie. Usage personnel uniquement.</p></div></div><div id="copyright" class="tab-panel"><div class="card"><h3>© Droit d'auteur</h3><p style="color:var(--t3);font-size:11px;margin-bottom:12px">Conformément à la Loi sur le droit d'auteur du Canada (L.R.C. 1985, ch. C-42)</p><p style="font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:12px">Le code source, le design et l'interface sont protégés. Tous droits réservés © 2026.</p></div></div></div>
+        </div></div><div class="card"><div class="fg"><label class="fg-label">Seuil alerte (%)</label><input type="range" id="alertSeuil" min="50" max="100" value="85" class="fc" oninput="document.getElementById('alertSeuilV').textContent=this.value+'%'"><div style="text-align:center;color:var(--a-blue)" id="alertSeuilV">85%</div></div><button class="btn btn-primary btn-sm" onclick="saveParams()">Enregistrer</button><button class="btn btn-danger btn-sm" onclick="clearData()" style="margin-left:8px">Effacer données</button></div></div>
+        <div id="page-aide" class="page"><div class="section-title">📚 Guide d'utilisation</div>
+<p style="font-size:13px;color:var(--t3);margin-bottom:20px">Bienvenue dans BudgetCAD ! Ce guide vous explique tout ce que vous devez savoir pour gérer votre budget facilement.</p>
+
+<div class="card" style="margin-bottom:16px"><div class="card-title">🚀 DÉMARRAGE RAPIDE (Première utilisation)</div>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:12px"><strong>Étape 1 :</strong> Cliquez sur <strong>💵 Revenus</strong> dans le menu de gauche.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:12px;padding-left:20px">→ Entrez votre <strong>taux horaire</strong> (ex: 25,00 $/h) et vos <strong>heures par semaine</strong> (ex: 35 h).</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:12px;padding-left:20px">→ Le calcul du salaire NET se fait automatiquement (environ 70% du brut pour le Québec).</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:12px"><strong>Étape 2 :</strong> Ajoutez votre <strong>salaire réel</strong> quand vous recevez votre paie.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:12px;padding-left:20px">→ Bouton « ＋ Ajouter un salaire réel » : entrez la date et le montant reçu.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:12px;padding-left:20px">→ 💡 <em>Pourquoi faire ? Sans salaire réel, le Dashboard reste à 0 $. Cela évite de fausser vos calculs.</em></p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:12px"><strong>Étape 3 :</strong> Retournez au <strong>🏠 Dashboard</strong> et commencez à ajouter vos dépenses.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:12px;padding-left:20px">→ Bouton bleu « + Dépense » en haut à droite.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;padding-left:20px">→ Remplissez le lieu, la catégorie et le montant. C'est tout !</p>
+</div>
+
+<div class="card" style="margin-bottom:16px"><div class="card-title">🏠 DASHBOARD (Page d'accueil)</div>
+<p style="font-size:13px;color:var(--t3);margin-bottom:8px"><em>C'est votre tableau de bord principal. Il résume toute votre situation financière.</em></p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px"><strong>💚 Revenus :</strong> L'argent que vous avez gagné ce mois. Se base sur vos salaires réels. Si vous n'avez pas encore reçu de paie ce mois-ci, ce sera 0 $.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px"><strong>💙 Dépenses :</strong> Tout ce que vous avez dépensé ce mois. Addition de toutes vos dépenses (sauf Épargne et Non-dépensé).</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px"><strong>Solde :</strong> Revenus − Dépenses − Non-dépensé. <em>Exemple : vous gagnez 2000 $, dépensez 1500 $ → Solde = +500 $.</em></p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px"><strong>💜 Épargne (mois) :</strong> Ce que vous avez mis de côté ce mois (dépenses type « Épargne » + Solde positif).</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px"><strong>💜 Épargne (année) :</strong> Cumul de toute votre épargne depuis janvier. <em>Exemple : 200 $ en janvier + 300 $ en février = 500 $.</em></p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px"><strong>🟡 Non-dépensé :</strong> Argent restant non utilisé. Calculé automatiquement.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px"><strong>📅 Sélecteur d'année :</strong> Changez l'année pour voir vos anciennes données ou planifier l'avenir.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px"><strong>📈 Graphique Dépenses vs Revenus :</strong> Visualisez vos 6 derniers mois en un coup d'œil.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px"><strong>🥧 Graphique Catégories :</strong> Voyez où va votre argent (épicerie, loyer, loisirs...).</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px"><strong>📋 Récapitulatif mensuel :</strong> Tableau complet mois par mois avec une ligne TOTAL en bas.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8"><strong>⏱️ Dernières dépenses :</strong> Les 6 dépenses les plus récentes.</p>
+</div>
+
+<div class="card" style="margin-bottom:16px"><div class="card-title">📝 JOURNAL DES DÉPENSES</div>
+<p style="font-size:13px;color:var(--t3);margin-bottom:8px"><em>Retrouvez toutes vos dépenses au même endroit. Filtrez, modifiez, supprimez.</em></p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px"><strong>Filtre Mois :</strong> Affiche uniquement les dépenses d'un mois précis.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px"><strong>Filtre Catégorie :</strong> Affiche seulement l'épicerie, ou seulement l'essence...</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px"><strong>Recherche :</strong> Tapez un mot (ex: « IGA », « Shell ») pour trouver rapidement.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px"><strong>Min $ / Max $ :</strong> Filtrez par montant. <em>Exemple : Min 50 $, Max 200 $.</em></p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px"><strong>✎ Modifier :</strong> Passez la souris sur une dépense, cliquez sur le crayon.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px"><strong>✕ Supprimer :</strong> Passez la souris sur une dépense, cliquez sur la croix.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8"><strong>📥 CSV :</strong> Exportez toutes vos dépenses pour les ouvrir dans Excel.</p>
+</div>
+
+<div class="card" style="margin-bottom:16px"><div class="card-title">➕ AJOUTER UNE DÉPENSE (Le formulaire)</div>
+<p style="font-size:13px;color:var(--t3);margin-bottom:8px"><em>Remplissez ce formulaire à chaque achat ou paiement.</em></p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px"><strong>📅 Date :</strong> Pré-remplie avec aujourd'hui. Modifiez si besoin.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px"><strong>🕐 Heure :</strong> Optionnelle. Pratique pour les reçus.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px"><strong>📍 Lieu / Endroit :</strong> Nom du magasin ou commerce. <em>L'autocomplétion vous propose les lieux déjà utilisés.</em></p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px"><strong>📝 Description :</strong> Ce que vous avez acheté. <em>Exemple : « Épicerie semaine », « Plein d'essence ».</em></p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px"><strong>🏷️ Catégorie :</strong> Choisissez parmi la liste ou tapez une nouvelle. <em>Exemples : Épicerie, Carburant, Loyer, Restaurant...</em></p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px"><strong>💲 Montant :</strong> En dollars canadiens. Utilisez le point pour les cents. <em>Exemple : 42,99</em></p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px"><strong>🏷️ Type de dépense :</strong></p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:4px;padding-left:20px">• <strong>Fixe :</strong> Même montant chaque mois (loyer, abonnement, assurance).</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:4px;padding-left:20px">• <strong>Variable :</strong> Change chaque mois (épicerie, essence, resto).</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:4px;padding-left:20px">• <strong>Occasionnel :</strong> Arrive de temps en temps (cadeau, réparation, voyage).</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:4px;padding-left:20px">• <strong>Épargne :</strong> Argent mis de côté (CELI, REER, compte épargne).</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px;padding-left:20px">• <strong>Non-dépensé :</strong> Argent qui reste après tout (calculé automatiquement).</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8"><strong>💬 Note :</strong> Commentaire libre. <em>Exemple : « Payé comptant », « Facture #1234 ».</em></p>
+</div>
+
+<div class="card" style="margin-bottom:16px"><div class="card-title">📅 CALENDRIER</div>
+<p style="font-size:13px;color:var(--t3);margin-bottom:8px"><em>Visualisez vos dépenses sur un calendrier mensuel.</em></p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px"><strong>◀ ▶ :</strong> Passez au mois précédent ou suivant.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px"><strong>● :</strong> Revenir au mois en cours.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px"><strong>Points bleus :</strong> Jours avec des dépenses. Le montant total du jour est affiché.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8"><strong>Encadré bleu :</strong> Date d'aujourd'hui.</p>
+</div>
+
+<div class="card" style="margin-bottom:16px"><div class="card-title">📷 SCANNER DE FACTURES (OCR)</div>
+<p style="font-size:13px;color:var(--t3);margin-bottom:8px"><em>Prenez une photo de votre ticket de caisse, l'application lit les articles automatiquement !</em></p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px"><strong>1.</strong> Cliquez sur la zone « Photographier ».</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px"><strong>2.</strong> Prenez une photo claire de votre reçu.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px"><strong>3.</strong> L'OCR analyse l'image et extrait les articles avec leurs prix.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px"><strong>4.</strong> Cochez/décochez les articles à importer.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px"><strong>5.</strong> Cliquez sur « Importer ».</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8"><strong>⚠️ Conseil :</strong> Vérifiez les montants, l'OCR peut parfois se tromper.</p>
+</div>
+
+<div class="card" style="margin-bottom:16px"><div class="card-title">💰 BUDGET (Suivi par catégorie)</div>
+<p style="font-size:13px;color:var(--t3);margin-bottom:8px"><em>Définissez une limite de dépenses pour chaque catégorie et suivez votre progression.</em></p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px"><strong>Barre de progression :</strong></p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:4px;padding-left:20px">• <strong style="color:#4ECDC4">Vert :</strong> Vous êtes dans votre budget (moins de 85%).</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:4px;padding-left:20px">• <strong style="color:#FFC040">Orange :</strong> Attention, vous approchez de la limite (85-100%).</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px;padding-left:20px">• <strong style="color:#FF5C72">Rouge :</strong> Budget dépassé ! (plus de 100%).</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px"><strong>⚙️ Modifier les budgets :</strong> Cliquez pour entrer vos limites par catégorie. <em>Exemple : Épicerie = 400 $/mois, Restaurant = 150 $/mois.</em></p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8"><strong>🚨 Alertes Dashboard :</strong> Une alerte rouge apparaît quand vous dépassez un budget.</p>
+</div>
+
+<div class="card" style="margin-bottom:16px"><div class="card-title">📈 GRAPHIQUES & ANALYSES</div>
+<p style="font-size:13px;color:var(--t3);margin-bottom:8px"><em>Visualisez vos finances avec de beaux graphiques.</em></p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px"><strong>📊 Onglet Dépenses :</strong></p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:4px;padding-left:20px">• <strong>Anneau :</strong> Répartition de vos dépenses par catégorie (comme un camembert).</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:4px;padding-left:20px">• <strong>Progression radiale :</strong> Cercles montrant votre consommation par rapport au budget. Si vous dépassez, vous verrez « +150% » en rouge.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px;padding-left:20px">• <strong>Jauge du mois :</strong> Deux jauges circulaires (Dépenses et Épargne) avec le solde au centre.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px"><strong>💵 Onglet Salaires :</strong></p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:4px;padding-left:20px">• <strong>Barres :</strong> Vos salaires réels par semaine.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px;padding-left:20px">• <strong>Cumul vs Estimé :</strong> Compare ce que vous avez vraiment gagné avec ce qui était prévu.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8"><strong>📅 Mois :</strong> Utilisez le sélecteur en haut pour choisir le mois à analyser.</p>
+</div>
+
+<div class="card" style="margin-bottom:16px"><div class="card-title">📊 COMPARAISON (Mois par mois)</div>
+<p style="font-size:13px;color:var(--t3);margin-bottom:8px"><em>Comparez vos dépenses sur toute l'année.</em></p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px"><strong>Graphique à barres empilées :</strong> Chaque barre = un mois. Chaque couleur = une catégorie. Vous voyez d'un coup d'œil quel mois a été le plus dépensier et dans quelle catégorie.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px"><strong>Tableau :</strong> Évolution mois par mois avec la tendance.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:4px;padding-left:20px">• 📈 Hausse : dépenses en augmentation.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:4px;padding-left:20px">• 📉 Baisse : dépenses en diminution.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;padding-left:20px">• ➡️ Stable : dépenses similaires.</p>
+</div>
+
+<div class="card" style="margin-bottom:16px"><div class="card-title">💵 REVENUS (Gestion complète)</div>
+<p style="font-size:13px;color:var(--t3);margin-bottom:8px"><em>Tout ce qui concerne l'argent qui entre.</em></p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px"><strong>💰 Salaires réels :</strong> Enregistrez chaque paie. Date, heure (optionnelle), montant, note. Cliquez sur ✕ pour supprimer.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px"><strong>📊 Statistiques :</strong> Salaire moyen, minimum et maximum calculés automatiquement.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px"><strong>📊 Salaire estimé :</strong> Taux horaire × Heures/semaine. Le NET se calcule automatiquement (70% du brut). <em>Exemple : 25 $/h × 40 h = 1000 $ brut → 700 $ net/semaine.</em></p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px"><strong>📥 Revenus supplémentaires :</strong> Ajoutez d'autres sources de revenus.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:4px;padding-left:20px">• <strong>Mensuel :</strong> Chaque mois (allocations, pension alimentaire).</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:4px;padding-left:20px">• <strong>Trimestriel :</strong> Tous les 3 mois (dividendes, remboursements).</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px;padding-left:20px">• <strong>Annuel :</strong> Une fois par an (bonus, retour d'impôts).</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8"><strong>💾 Enregistrer :</strong> N'oubliez pas de cliquer pour sauvegarder.</p>
+</div>
+
+<div class="card" style="margin-bottom:16px"><div class="card-title">🏷️ CATÉGORIES (Personnalisation)</div>
+<p style="font-size:13px;color:var(--t3);margin-bottom:8px"><em>Gérez vos propres catégories de dépenses.</em></p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px"><strong>➕ Créer :</strong> Tapez un nom et cliquez sur +. <em>Exemple : « Animaux », « Sport », « Cadeaux ».</em></p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px"><strong>🗑️ Supprimer :</strong> Cliquez sur une catégorie existante, puis confirmez.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px"><strong>⚠️ Attention :</strong> Supprimer une catégorie ne supprime pas les dépenses associées.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8"><strong>💲 Budgets :</strong> Définissez une limite pour chaque catégorie directement ici.</p>
+</div>
+
+<div class="card" style="margin-bottom:16px"><div class="card-title">🔄 SYNCHRONISATION (Sauvegarde et transfert)</div>
+<p style="font-size:13px;color:var(--t3);margin-bottom:8px"><em>Transférez vos données entre appareils ou faites une sauvegarde.</em></p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px"><strong>📱 QR Code :</strong> Exportez vos données en QR code. Scannez-le avec un autre appareil pour importer.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px"><strong>📋 Copier :</strong> Copie les données dans le presse-papier. Collez dans un fichier ou un message.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px"><strong>📥 Télécharger JSON :</strong> Sauvegarde complète dans un fichier.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px"><strong>📤 Charger fichier :</strong> Restaurez une sauvegarde.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px"><strong>📷 Scanner QR :</strong> Utilisez la caméra pour scanner un QR code.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8"><strong>Ou collez :</strong> Collez des données JSON et importez-les.</p>
+</div>
+
+<div class="card" style="margin-bottom:16px"><div class="card-title">⚙️ PARAMÈTRES</div>
+<p style="font-size:13px;color:var(--t3);margin-bottom:8px"><em>Personnalisez l'apparence de l'application.</em></p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px"><strong>🎨 Palette :</strong> 10 thèmes de couleurs. « Premium » (Platine, Or, Diamant...) et « Classiques ».</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px"><strong>Seuil alerte :</strong> À quel pourcentage du budget l'alerte se déclenche (85% par défaut).</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px"><strong>Enregistrer :</strong> Sauvegardez vos paramètres.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8"><strong>⚠️ Effacer données :</strong> Supprime TOUT. Action irréversible.</p>
+</div>
+
+<div class="card" style="margin-bottom:16px"><div class="card-title">💡 ASTUCES ET CONSEILS</div>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px">• <strong>Mode plein écran :</strong> Bouton ◧ en haut. Cache le menu pour plus d'espace.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px">• <strong>Thème clair/sombre :</strong> Bouton 🌙/☀️ en haut. L'application détecte automatiquement votre préférence système.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px">• <strong>Autocomplétion :</strong> Les lieux et catégories s'affichent automatiquement quand vous tapez.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px">• <strong>Données 100% privées :</strong> Tout est stocké dans votre navigateur. Aucune donnée n'est envoyée sur Internet.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px">• <strong>Sans salaire réel = 0 $ :</strong> Tant que vous n'avez pas enregistré votre paie, le Dashboard reste à zéro pour éviter les faux calculs.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px">• <strong>Planification :</strong> Changez l'année pour 2027 ou 2028 et simulez votre budget futur.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px">• <strong>Export régulier :</strong> Faites une sauvegarde JSON de temps en temps (Synchroniser → Télécharger JSON).</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8">• <strong>Mot-clé automatique :</strong> Si vous tapez « IGA » dans le lieu, la catégorie « Épicerie » est suggérée automatiquement.</p>
+</div>
+
+<div class="card" style="margin-bottom:16px"><div class="card-title">❓ FOIRE AUX QUESTIONS</div>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:12px"><strong>Q : Pourquoi mes revenus sont à 0 $ ?</strong><br>R : Vous n'avez pas encore ajouté de salaire réel pour ce mois. Allez dans Revenus → Ajouter un salaire réel.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:12px"><strong>Q : Comment voir l'année dernière ?</strong><br>R : Dans le Dashboard, utilisez le sélecteur 📅 Année en haut.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:12px"><strong>Q : Comment changer un budget ?</strong><br>R : Allez dans Budget → ⚙️ Modifier les budgets, ou dans Catégories → section Budgets.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:12px"><strong>Q : L'OCR ne lit pas bien mon ticket.</strong><br>R : Assurez-vous d'avoir une photo bien droite et bien éclairée. Vérifiez les montants avant d'importer.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:12px"><strong>Q : Comment transférer mes données sur un nouveau téléphone ?</strong><br>R : Allez dans Synchroniser → QR Code → générez le code → scannez-le avec l'autre appareil.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:12px"><strong>Q : Le QR Code est trop volumineux.</strong><br>R : L'application compresse automatiquement les données. Si c'est encore trop gros, exportez par fichier JSON.</p>
+<p style="font-size:13px;color:var(--t2);line-height:1.8"><strong>Q : Mes données sont-elles en sécurité ?</strong><br>R : Oui. Tout est stocké localement dans votre navigateur (localStorage). Rien n'est envoyé sur Internet. BudgetCAD fonctionne même sans connexion.</p>
+</div>
+
+</div>
+        <div id="page-legal" class="page"><div class="section-title">📝 Mentions légales</div><div class="tabs"><button class="tab active" onclick="switchLegalTab('privacy')">🔒 Confidentialité</button><button class="tab" onclick="switchLegalTab('terms')">📋 Conditions</button><button class="tab" onclick="switchLegalTab('copyright')">© Copyright</button></div><div id="privacy" class="tab-panel active"><div class="card"><h3>🔒 Politique de confidentialité</h3><p style="color:var(--t3);font-size:11px;margin-bottom:12px">Dernière mise à jour : Mai 2026</p><p style="font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:12px"><strong>1. Collecte :</strong> BudgetCAD ne collecte aucune donnée personnelle. Tout est stocké localement (localStorage).</p><p style="font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:12px"><strong>2. Utilisation :</strong> Données utilisées uniquement pour vos tableaux de bord.</p><p style="font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:12px"><strong>3. Partage :</strong> Aucune donnée transmise à des tiers.</p><p style="font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:12px"><strong>4. Conformité :</strong> Conforme à la LPRPDE (Loi sur la protection des renseignements personnels et les documents électroniques, Canada).</p></div></div><div id="terms" class="tab-panel"><div class="card"><h3>📋 Conditions d'utilisation</h3><p style="color:var(--t3);font-size:11px;margin-bottom:12px">Dernière mise à jour : Mai 2026</p><p style="font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:12px">BudgetCAD est fourni « tel quel » sans garantie. Usage personnel uniquement.</p></div></div><div id="copyright" class="tab-panel"><div class="card"><h3>© Droit d'auteur</h3><p style="color:var(--t3);font-size:11px;margin-bottom:12px">Conformément à la Loi sur le droit d'auteur du Canada (L.R.C. 1985, ch. C-42)</p><p style="font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:12px">Le code source, le design et l'interface sont protégés. Tous droits réservés © 2026.</p></div></div></div>
     </div>
   </main>
 </div>
@@ -353,8 +521,8 @@ function nonDepenseM(y, m) { return S.depenses.filter(d => { const dt = new Date
 function autoCalcNonDepense(){var n=new Date(),y=n.getFullYear(),m=n.getMonth();var sM=salM(y,m),reste=sM-depsM(y,m)-nonDepenseM(y,m);S.depenses=S.depenses.filter(function(d){return!(d.type==='Non-dépensé'&&d.note==='Solde automatique');});if(reste>0.005)S.depenses.push({id:Date.now()+9999,date:y+'-'+String(m+1).padStart(2,'0')+'-01',heure:'00:00',lieu:'Capital non-affecté',desc:'Reste',cat:'Non-dépensé',montant:Math.round(reste*100)/100,type:'Non-dépensé',carte:'',note:'Solde automatique',createdAt:new Date().toISOString()});persist();}
 function autoCat(lieu, desc) { const t = (lieu+' '+desc).toLowerCase(); for (const [cat, kws] of Object.entries(KW)) { if (kws.some(kw => t.includes(kw))) return cat; } return 'Autre'; }
 
-const PT = {dashboard:'Dashboard',depenses:'Dépenses',calendrier:'Calendrier',scanner:'Scanner',budget:'Budget',graphiques:'Graphiques',comparaison:'Comparaison',revenus:'Revenus',categories:'Catégories',guichets:'Guichets ATM',sync:'Synchroniser',params:'Paramètres',legal:'Mentions légales'};
-function nav(p) { document.querySelectorAll('.page').forEach(x => x.classList.remove('active')); document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active')); const pg = document.getElementById('page-'+p); if (pg) pg.classList.add('active'); const ni = document.querySelector(`[data-p="${p}"]`); if (ni) ni.classList.add('active'); document.getElementById('topbarTitle').textContent = PT[p] || p; closeSidebar(); if(p==='dashboard'){populateDashboardYear();renderDashboard();} if (p==='depenses') renderDeps(); if (p==='calendrier') renderCal(); if (p==='budget') renderBudget(); if (p==='graphiques'){populateFiltreMoisGraph();renderGraphiques();} if (p==='comparaison') renderComparaison(); if (p==='revenus') renderRevenus(); if (p==='categories') renderCategories(); if (p==='guichets') initMap(); if (p==='sync') stopScanner(); if (p==='params') renderParams(); }
+const PT={dashboard:'Dashboard',depenses:'Dépenses',calendrier:'Calendrier',scanner:'Scanner',budget:'Budget',graphiques:'Graphiques',comparaison:'Comparaison',revenus:'Revenus',categories:'Catégories',guichets:'Guichets ATM',sync:'Synchroniser',params:'Paramètres',aide:'Aide',legal:'Mentions légales'};
+function nav(p) { document.querySelectorAll('.page').forEach(x => x.classList.remove('active')); document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active')); const pg = document.getElementById('page-'+p); if (pg) pg.classList.add('active'); const ni = document.querySelector(`[data-p="${p}"]`); if (ni) ni.classList.add('active'); document.getElementById('topbarTitle').textContent = PT[p] || p; closeSidebar(); if(p==='dashboard'){populateDashboardYear();renderDashboard();} if (p==='depenses') renderDeps(); if (p==='calendrier') renderCal(); if (p==='budget') renderBudget(); if (p==='graphiques'){populateFiltreMoisGraph();renderGraphiques();} if (p==='comparaison') renderComparaison(); if (p==='revenus') renderRevenus(); if (p==='categories') renderCategories(); if (p==='guichets') initMap(); if (p==='sync') stopScanner(); if(p==='params')renderParams();if(p==='aide')renderAide(); }
 function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sidebarOverlay').classList.toggle('open'); }
 function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebarOverlay').classList.remove('open'); }
 
@@ -530,6 +698,7 @@ function changeDashboardYear(){var s=document.getElementById('dashboardYear');if
 var dashboardYear=new Date().getFullYear();
 function populateDashboardYear(){var s=document.getElementById('dashboardYear');if(!s)return;var years=[];S.depenses.forEach(function(d){var y=parseInt(d.date.slice(0,4));if(years.indexOf(y)===-1)years.push(y);});if(S.salaire.salairesReels){S.salaire.salairesReels.forEach(function(s){var y=new Date(s.date).getFullYear();if(years.indexOf(y)===-1)years.push(y);});}var cy=new Date().getFullYear();if(years.indexOf(cy)===-1)years.push(cy);years.sort(function(a,b){return b-a;});dashboardYear=years[0]||cy;s.innerHTML=years.map(function(y){return'<option value="'+y+'"'+(y===dashboardYear?' selected':'')+'>'+y+'</option>';}).join('');}
 function changeDashboardYear(){var s=document.getElementById('dashboardYear');if(s)dashboardYear=parseInt(s.value)||new Date().getFullYear();renderDashboard();}
+function renderAide(){}
 function init(){loadState();if(!S.params.palette)S.params.palette='platine-onyx';if(!localStorage.getItem(STORAGE_KEY)){var d=window.matchMedia('(prefers-color-scheme:dark)').matches;S.params.theme=d?'dark':'light';applyTheme(S.params.theme);persist();}window.matchMedia('(prefers-color-scheme:dark)').addEventListener('change',function(e){if(!localStorage.getItem(STORAGE_KEY+'_themeLocked')){S.params.theme=e.matches?'dark':'light';applyTheme(S.params.theme);persist();}});document.documentElement.setAttribute('data-palette',S.params.palette);document.getElementById('dDate').value=TN();document.getElementById('dHeure').value=TM();autoCalcNonDepense();populateDashboardYear();renderDashboard();}
 document.addEventListener('DOMContentLoaded', init);
 </script>
