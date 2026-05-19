@@ -477,7 +477,6 @@ tbody tr:hover{background:rgba(77,143,255,0.03)}
 
 <script>
 
-function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 
 const V = '5.0.0';
 const M = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
@@ -725,7 +724,6 @@ function renderAide(){}
 function quickDep(lieu,cat,montant){S.depenses.push({id:Date.now(),date:TN(),heure:TM(),lieu:lieu,desc:'',cat:cat,montant:montant,type:'Variable',note:'Ajout rapide',createdAt:new Date().toISOString()});if(!S.categories.includes(cat)){S.categories.push(cat);S.budgets[cat]=0;}autoCalcNonDepense();persist();renderDashboard();toast('✅ '+lieu+' : '+F(montant),'success',1500);}
 var tauxDevises={USD:0.73,EUR:0.68,GBP:0.58,CHF:0.65,JPY:110,MXN:12.5};
 function ouvrirConvertisseur(){openModal('mConvertisseur');document.getElementById('convMontant').value=100;convertirDevise();}
-var tauxDevises={USD:0.73,EUR:0.68,GBP:0.58,CHF:0.65,JPY:110,MXN:12.5};
 async function convertirDevise(){var m=parseFloat(document.getElementById('convMontant')?.value)||0;var d=document.getElementById('convDevise')?.value||'USD';var el=document.getElementById('convResultat');if(!el)return;el.textContent='⏳ Chargement...';try{var res=await fetch('https://api.frankfurter.app/latest?from=CAD&to='+d);var data=await res.json();var taux=data.rates[d];var r=m*taux;el.textContent=F(r).replace('$','')+' '+d;document.getElementById('convTauxInfo').textContent='Taux réel · '+new Date().toLocaleDateString('fr-CA');}catch(e){var taux=tauxDevises[d]||0.73;var r=m*taux;el.textContent=F(r).replace('$','')+' '+d;document.getElementById('convTauxInfo').textContent='Taux estimé (hors-ligne)';}}
 
 
