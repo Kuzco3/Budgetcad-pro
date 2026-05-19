@@ -1,0 +1,23 @@
+/* Palette signature BudgetCAD Pro */
+:root {
+  /* Fond profond légèrement violet */
+  --bg-deep: #07060D;
+  --bg-surface: #0D0B17;
+  --bg-elevated: #12101F;
+  --bg-glass: rgba(13, 11, 23, 0.78);
+  
+  /* Accents métalliques */
+  --gold: #C9A96E;        /* Or vieilli */
+  --gold-glow: #E8D5A3;   /* Or brillant */
+  --platinum: #9CA3AF;    /* Platine */
+  --bronze: #B4846C;      /* Bronze */
+  --copper: #C77D5A;      /* Cuivre */
+  --silver: #A8B5C8;      /* Argent */
+  
+  /* Accents fonctionnels */
+  --success: #7EB8A2;     /* Vert sauge */
+  --danger: #C4736E;      /* Rouge brique */
+  --warning: #D4A96A;     /* Ambre doré */
+  --info: #8BA4C7;        /* Bleu acier */
+  --purple: #9B8EC4;      /* Violet fumé */
+}
