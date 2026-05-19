@@ -16,13 +16,13 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js" defer></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
 
 
 <style>
@@ -473,7 +473,7 @@ tbody tr:hover{background:rgba(77,143,255,0.03)}
 
 <div class="modal-bg" id="mBudget"><div class="modal"><div class="modal-hdr"><div class="modal-title">Budgets</div><button class="btn btn-ghost btn-icon btn-sm" style="margin-left:auto" onclick="closeModal('mBudget')">✕</button></div><div class="modal-body" id="mBudgetBody"></div><div class="modal-ftr"><button class="btn btn-ghost" onclick="closeModal('mBudget')">Annuler</button><button class="btn btn-primary" onclick="saveBudgets()">Enregistrer</button></div></div></div>
 
-<div class="modal-bg" id="mConvertisseur"><div class="modal" style="max-width:400px"><div class="modal-hdr"><div class="modal-title">💱 Convertisseur</div><button class="btn btn-ghost btn-icon btn-sm" style="margin-left:auto" onclick="closeModal('mConvertisseur')">✕</button></div><div class="modal-body"><div class="fg"><label class="fg-label">De (CAD)</label><input type="number" class="fc fc-num" id="convMontant" value="100" oninput="convertirDevise()"></div><div class="fg"><label class="fg-label">Vers</label><select class="fc" id="convDevise" onchange="convertirDevise()"><option value="USD">🇺🇸 USD - Dollar US</option><option value="EUR">🇪🇺 EUR - Euro</option><option value="GBP">🇬🇧 GBP - Livre Sterling</option><option value="CHF">🇨🇭 CHF - Franc Suisse</option><option value="JPY">🇯🇵 JPY - Yen</option><option value="MXN">🇲🇽 MXN - Peso Mexicain</option></select></div><div style="text-align:center;padding:20px;background:var(--s2);border-radius:var(--r-md);margin-top:12px"><div style="font-size:11px;color:var(--t3)">RÉSULTAT (estimé)</div><div style="font-family:var(--f-mono);font-size:28px;font-weight:700;color:var(--a-green);margin-top:6px" id="convResultat">—</div><div style="font-size:10px;color:var(--t3);margin-top:4px">Taux indicatif · Mise à jour manuelle</div></div></div></div></div>
+<div class="modal-bg" id="mConvertisseur"><div class="modal" style="max-width:400px"><div class="modal-hdr"><div class="modal-title">💱 Convertisseur</div><button class="btn btn-ghost btn-icon btn-sm" style="margin-left:auto" onclick="closeModal('mConvertisseur')">✕</button></div><div class="modal-body"><div class="fg"><label class="fg-label">De (CAD)</label><input type="number" class="fc fc-num" id="convMontant" value="100" oninput="convertirDevise()"></div><div class="fg"><label class="fg-label">Vers</label><select class="fc" id="convDevise" onchange="convertirDevise()"><option value="USD">🇺🇸 USD - Dollar US</option><option value="EUR">🇪🇺 EUR - Euro</option><option value="GBP">🇬🇧 GBP - Livre Sterling</option><option value="CHF">🇨🇭 CHF - Franc Suisse</option><option value="JPY">🇯🇵 JPY - Yen</option><option value="MXN">🇲🇽 MXN - Peso Mexicain</option></select></div><div style="text-align:center;padding:20px;background:var(--s2);border-radius:var(--r-md);margin-top:12px"><div style="font-size:11px;color:var(--t3)">RÉSULTAT (estimé)</div><div style="font-family:var(--f-mono);font-size:28px;font-weight:700;color:var(--a-green);margin-top:6px" id="convResultat">—</div><div style="font-size:10px;color:var(--t3);margin-top:4px" id="convTauxInfo">Taux indicatif</div></div></div></div></div>
 
 <script>
 
@@ -725,7 +725,8 @@ function renderAide(){}
 function quickDep(lieu,cat,montant){S.depenses.push({id:Date.now(),date:TN(),heure:TM(),lieu:lieu,desc:'',cat:cat,montant:montant,type:'Variable',note:'Ajout rapide',createdAt:new Date().toISOString()});if(!S.categories.includes(cat)){S.categories.push(cat);S.budgets[cat]=0;}autoCalcNonDepense();persist();renderDashboard();toast('✅ '+lieu+' : '+F(montant),'success',1500);}
 var tauxDevises={USD:0.73,EUR:0.68,GBP:0.58,CHF:0.65,JPY:110,MXN:12.5};
 function ouvrirConvertisseur(){openModal('mConvertisseur');document.getElementById('convMontant').value=100;convertirDevise();}
-function convertirDevise(){var m=parseFloat(document.getElementById('convMontant')?.value)||0;var d=document.getElementById('convDevise')?.value||'USD';var taux=tauxDevises[d]||0.73;var r=m*taux;document.getElementById('convResultat').textContent=F(r).replace('$','')+' '+d;}
+var tauxDevises={USD:0.73,EUR:0.68,GBP:0.58,CHF:0.65,JPY:110,MXN:12.5};
+async function convertirDevise(){var m=parseFloat(document.getElementById('convMontant')?.value)||0;var d=document.getElementById('convDevise')?.value||'USD';var el=document.getElementById('convResultat');if(!el)return;el.textContent='⏳ Chargement...';try{var res=await fetch('https://api.frankfurter.app/latest?from=CAD&to='+d);var data=await res.json();var taux=data.rates[d];var r=m*taux;el.textContent=F(r).replace('$','')+' '+d;document.getElementById('convTauxInfo').textContent='Taux réel · '+new Date().toLocaleDateString('fr-CA');}catch(e){var taux=tauxDevises[d]||0.73;var r=m*taux;el.textContent=F(r).replace('$','')+' '+d;document.getElementById('convTauxInfo').textContent='Taux estimé (hors-ligne)';}}
 
 
 function init(){loadState();if(!S.params.palette)S.params.palette='platine-onyx';if(!localStorage.getItem(STORAGE_KEY)){var d=window.matchMedia('(prefers-color-scheme:dark)').matches;S.params.theme=d?'dark':'light';applyTheme(S.params.theme);persist();}window.matchMedia('(prefers-color-scheme:dark)').addEventListener('change',function(e){if(!localStorage.getItem(STORAGE_KEY+'_themeLocked')){S.params.theme=e.matches?'dark':'light';applyTheme(S.params.theme);persist();}});document.documentElement.setAttribute('data-palette',S.params.palette);document.getElementById('dDate').value=TN();document.getElementById('dHeure').value=TM();autoCalcNonDepense();populateDashboardYear();renderDashboard();}
