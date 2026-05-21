@@ -16,13 +16,13 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js" defer></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 
 <style>
@@ -476,6 +476,7 @@ tbody tr:hover{background:rgba(77,143,255,0.03)}
 <div class="modal-bg" id="mConvertisseur"><div class="modal" style="max-width:400px"><div class="modal-hdr"><div class="modal-title">💱 Convertisseur</div><button class="btn btn-ghost btn-icon btn-sm" style="margin-left:auto" onclick="closeModal('mConvertisseur')">✕</button></div><div class="modal-body"><div class="fg"><label class="fg-label">De (CAD)</label><input type="number" class="fc fc-num" id="convMontant" value="100" oninput="convertirDevise()"></div><div class="fg"><label class="fg-label">Vers</label><select class="fc" id="convDevise" onchange="convertirDevise()"><option value="USD">🇺🇸 USD - Dollar US</option><option value="EUR">🇪🇺 EUR - Euro</option><option value="GBP">🇬🇧 GBP - Livre Sterling</option><option value="CHF">🇨🇭 CHF - Franc Suisse</option><option value="JPY">🇯🇵 JPY - Yen</option><option value="MXN">🇲🇽 MXN - Peso Mexicain</option></select></div><div style="text-align:center;padding:20px;background:var(--s2);border-radius:var(--r-md);margin-top:12px"><div style="font-size:11px;color:var(--t3)">RÉSULTAT (estimé)</div><div style="font-family:var(--f-mono);font-size:28px;font-weight:700;color:var(--a-green);margin-top:6px" id="convResultat">—</div><div style="font-size:10px;color:var(--t3);margin-top:4px" id="convTauxInfo">Taux indicatif</div></div></div></div></div>
 
 <script>
+function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 
 
 const V = '5.0.0';
@@ -514,7 +515,6 @@ const TN = () => new Date().toISOString().slice(0,10);
 const TM = () => { const n = new Date(); return `${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`; };
 const MK = d => d.slice(0,7);
 
-function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 
 var salM=function(forceY,forceM){var n=new Date(),y=forceY!==undefined?forceY:n.getFullYear(),m=forceM!==undefined?forceM:n.getMonth();var reels=S.salaire.salairesReels||[];var totalReels=0;reels.forEach(function(s){var d=new Date(s.date);if(d.getFullYear()===y&&d.getMonth()===m){totalReels+=s.montant;}});if(totalReels>0)return totalReels;return 0;};
 var salMoyenReel=function(){var y=dashboardYear||new Date().getFullYear();var r=(S.salaire.salairesReels||[]).filter(function(s){return new Date(s.date).getFullYear()===y;});return r.length?r.reduce(function(a,s){return a+s.montant;},0)/r.length:S.salaire.netM||0;};
